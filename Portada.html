@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Watch web</title>
+        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="perfil.css">
+    </head>
+
+<body>
+<!--encabezado principal-->
+    <header>
+         <h1><a href="#inicio">Watch web</a></h1>
+    <!--menú de navegación-->
+    <nav>
+    <ul>
+        <li><a href="https://cosita.cl/tienda/">Todos los Productos</a></li>
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#actualizaciones">Actualizaciones</a></li>
+        <li id="nav-register"><a href="C:\Users\Yuyen\Desktop\Proyecto de titulo\login\login.html">Registro</a></li>
+        <li id="nav-profile" style="display:none;">
+          <button id="profile-button" style="background: none; border: none; cursor: pointer; padding: 0;">
+            <img src="login/perfil-de-usuario.jpg" alt="Usuario" style="width: 24px; height: 24px;">
+          </button>
+        </li>
+    </ul>
+    </nav>
+     <!-- Acciones del usuario: búsqueda, perfil, favoritos, carrito -->
+    <!--<div class="header-actions">
+                    Barra de búsqueda con efectos de focus 
+                    <div class="search-container">
+                        <input type="text" placeholder="Buscar productos..." class="search-input" id="search-input">
+                        <button class="search-btn">🔍</button>
+                    </div>-->
+    </header>
+<script src="portada.js"></script>
+
+    <main>
+<!--Login registro de usuario-->
+
+<!--2do encabezado título del local-->
+    <section class ="Bienvenida" id="inicio">
+        <h2>¡Bienvenido a Watch web!</h2>
+        <p>Productos para un hogar más amigable.</p>
+        <a href="#productos" class="cta-button">Ver Productos</a>
+    </section>
+
+<!--parrafo de productos nuevos-->
+    <section class="actualizacion" id="actualizaciones">
+        <img src="Imagenes/Posibles/productos.jpg" alt="Posibles">
+    <div class= "noticias">
+        <h2>Productos a desarrollar</h2>
+        <p>Elige tu propio diseño para regalos o diseño para tu hogar</p>
+    </div>
+    </section>
+
+    <!--Parrafo de productos-->
+    <section class="productos" id="productos"> 
+        <div>
+                <img src="Imagenes/Polera.jpg" alt="Producto 1">
+                <h3>Poleras</h3>
+                <p>Elije tu imagen deseada</p>
+            </div>
+            
+            <div>
+                <img src="Imagenes/colgante.jpg" alt="Producto 2">
+                <h3>Colgantes</h3>
+                <p>Elije tu imagen deseada</p>
+            </div>
+            
+            <div>
+                <img src="Imagenes/mini proyector.jpg" alt="Producto 3">
+                <h3>Tecnologías</h3>
+                <p>Encuentra lo que necesitas</p>
+            </div>
+    <!-- <script src="productos.js"></script> -->
+    </section>
+
+    <section class="Nosotros" id="nosotros">
+        <h2>Sobre Nosotros</h2>
+        <p>En Watch Visual, nos comprometemos a ofrecer productos que te ayuden a decorar mejor tu hogar y ofreserte los accesorios a detalle</p>
+    </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Watch web</p>
+    </footer>
+
+    <!-- Sección modal para perfil de usuario -->
+    <div id="perfil-modal" class="perfil-container" style="z-index:1100;">
+        <div class="perfil-header">
+            <img src="login/perfil-de-usuario.jpg" alt="Foto de perfil" />
+            <a href="#" id="change-profile-photo">Cambiar foto del perfil</a>
+        </div>
+        <div class="perfil-info">
+            <label>Nombre:</label>
+            <div id="profile-name"></div>
+            <label>Correo:</label>
+            <div id="profile-email"></div>
+            <label>Nombre de usuario:</label>
+            <div id="profile-username"></div>
+            <label>Sitio web:</label>
+            <div id="profile-website">Sitio web</div>
+            <label>Biografía:</label>
+            <div id="profile-bio">Biografía</div>
+        </div>
+        <div class="perfil-links">
+            <a href="#" id="switch-to-professional">Cambiar a cuenta profesional</a>
+            <a href="#" id="personal-info-settings">Configuración de la información personal</a>
+        </div>
+        <form id="change-password-form">
+            <label for="new-password">Nueva contraseña:</label><br>
+            <input type="password" id="new-password" required><br><br>
+            <button type="submit">Cambiar contraseña</button>
+        </form>
+        <!-- <button id="close-profile">Cerrar sesion</button> -->
+        <p id="password-change-message"></p>
+        <button id="logout-button" class="btn" style="margin-top: 15px;">Cerrar sesión</button>
+    </div>
+
+    <!-- <script src="B_fondo.js"></script> -->
+</body>
+</html>

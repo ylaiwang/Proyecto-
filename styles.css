@@ -1,0 +1,254 @@
+/*Toda la pagina*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color:rgb(253, 240, 255);
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    padding-top: 80px; /* Deja espacio debajo del header */
+}
+/*encabezado*/
+header {
+    background-color: rgb(170, 95, 240, 0.5);
+    height: 80px;
+    width: 100%;
+    position:fixed;
+    border: #000000 solid;
+}
+
+h1 {
+    color: white;
+    position: absolute;
+    left: 120px;
+    top: 0;
+    line-height: 80px;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 210px;
+}
+
+header ul{
+    position: absolute;
+    right:5vw;
+    top:0;
+    line-height:80px;
+}
+header li{ 
+    display: inline;
+    margin-right: 4vw;
+}
+header a{ 
+    color: white;
+    text-decoration: none;
+}
+header a:hover{
+    text-decoration: underline;
+}
+
+.Bienvenida{
+    /* Gradiente animado de múltiples colores */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+    padding: 120px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/*actualizaicones y noticias*/
+.actualizacion {
+    display:flex;
+
+}
+.actualizacion img{
+    width: 50%;
+}
+.noticias {
+    width:50%;
+    background-color: white;
+    display:flex;
+    flex-direction:column;
+    align-items: center;
+    justify-content: center;
+}
+.noticias h2 {
+    font-size:40px;
+    margin-bottom: 30px;
+}
+.noticias p {
+    text-align: center;
+    line-height: 2em;
+}
+
+/*PRODUCTOS*/
+.productos {
+    display:flex;
+    background-color: #ede9db;
+    justify-content: space-between;
+    align-items: center;
+    padding: 100px 180px 80px;
+}
+.productos div {
+    width:300px;
+    text-align:center;
+}
+.productos img {
+    width:100%;
+    border-radius: 10px;;
+}
+.productos h3 {
+    font-size: 20px;    
+    margin: 20px 0;
+}
+.productos p {
+    font-size:14px;
+    line-height: 1.6em;
+}
+
+
+/*Pie de la pagina*/
+footer {
+    background-color:#000000;
+    color:#B7B7B7;
+    height:60px;
+    display:flex;
+    justify-content: left;
+    align-items: center;
+    font-size: 14px;
+}
+
+/* ===== ANIMACIONES KEYFRAMES ===== */
+
+/* Animación de entrada desde abajo */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animación de entrada desde la izquierda */
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Animación de pulso para elementos destacados */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Efecto shimmer para elementos con brillo */
+@keyframes shimmer {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: calc(200px + 100%) 0;
+    }
+}
+
+/* Animación flotante sutil */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Cambio de gradiente para fondos dinámicos */
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Aparición suave */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Entrada de modal con escala */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Rotación para spinner de carga */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/*DISEÑO INTERACTIVO EN CASO DE QUE SEA EN UNA VENTANA MAS PEQUEÑA*/
+@media screen and (max-width: 768px){
+header ul{ 
+    display: none;
+}
+
+header h1{
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+header h1{ 
+    left: 50%;
+    transformX: (-50%);
+}
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/*icono del menu*/
+.menu-icon{
+    display:block;
+    background-color: transparent;
+    color:white;
+    font-size: 35px;
+    position:absolute;
+    top:15px;
+    left:20px;
+    border:none;
+    cursor: pointer;
+}
+
+.products{
+    font-size: 40px;
+}
+
+}

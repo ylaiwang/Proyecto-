@@ -1,0 +1,206 @@
+   * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #1f2937;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+    }
+    
+    .card {
+      background-color: #1e293b;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+    
+    .card-header {
+      padding: 20px;
+      text-align: center;
+      color: white;
+    }
+    
+    .card-header h2 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    
+    .card-header p {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #334155;
+    }
+    
+    .tab-trigger {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .tab-trigger.active {
+      background-color: #7c3aed;
+      color: white;
+    }
+    
+    .tab-content {
+      display: none;
+      padding: 20px;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 5px;
+      border: 1px solid #475569;
+      background-color: #334155;
+      color: white;
+      font-size: 16px;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #7c3aed;
+    }
+    
+    .forgot-password {
+      text-align: right;
+      margin-bottom: 15px;
+    }
+    
+    .forgot-password a {
+      color: #a78bfa;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    
+    .forgot-password a:hover {
+      text-decoration: underline;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      background-color: #7c3aed;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .btn:hover {
+      background-color: #6d28d9;
+    }
+    
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 20px 0;
+      color: #94a3b8;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid #475569;
+    }
+    
+    .divider::before {
+      margin-right: 10px;
+    }
+    
+    .divider::after {
+      margin-left: 10px;
+    }
+    
+    .social-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .social-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      border: 1px solid #475569;
+      border-radius: 5px;
+      background-color: #334155;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .social-btn:hover {
+      background-color: #475569;
+    }
+    
+.social-btn img {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+/* Estilos para el checkbox "Permanecer conectado" en login */
+
+.form-group.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+  color: #cbd5e1;
+  font-size: 14px;
+  cursor: pointer;
+  justify-content: flex-start;
+}
+
+.form-group.remember-me input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}

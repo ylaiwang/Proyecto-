@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch Visual</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+    <header>
+         <!-- Botón para abrir el menú -->
+        <button id="menu-btn" class="menu-icon">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+    <!-- Contenedor del menú principal -->
+    <div id="menu" class="menu">
+        <ul>
+            <li class="submenu">
+                <a href="#">Figuras</a>
+                <!-- Submenú de cámaras -->
+                <ul class="submenu-content">
+                    <li><a href="#">Anime</a></li>
+                    <li><a href="#">Series o películas</a></li>
+                    <li><a href="#">Personalizado</a></li>
+
+                </ul>
+            </li>
+            <li class="submenu">
+                <a href="#">Colgantes</a>
+                <ul class="submenu-content">
+                    <li><a href="#">Cristales</a></li>
+                    <li><a href="#">Piedra</a></li>
+                    <li><a href="#">Personalizado</a></li>
+                </ul>
+            </li> 
+            <li class="submenu">
+                <a href="#">Cristales</a>
+                <ul class="submenu-content">
+                    <li><a href="#">Azul</a></li>
+                    <li><a href="#">Trasparente</a></li>
+                    <li><a href="#">verde</a></li>
+                </ul>
+            </li> 
+    </div>
+        <div class="logo">
+            <img src="logo.png" alt="Watch Visual Logo">
+            <div class="theme-toggle" id="themeToggle">
+                🌙 <!-- Icono de luna para modo nocturno -->
+            </div>
+            <div class="container">
+                <form class="login-form" id="loginForm">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#productos">Productos</a></li>
+                <li><a href="#nosotros">Nosotros</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="inicio" class="hero">
+        <h1>Bienvenido a Watch Visual</h1>
+        <p>Productos para un hogar más amigable.</p>
+        <a href="#productos" class="cta-button">Ver Productos</a>
+    </section>
+
+    <section id="productos" class="products">
+        <h2>Nuestro Producto</h2>
+        <div class="product-grid">
+            <div class="product-item">
+                <img src="product1.jpg" alt="Producto 1">
+                <h3>Figuras</h3>
+                <p>Elije tu imagen deseada</p>
+            </div>
+            <div class="product-item">
+                <img src="product2.jpg" alt="Producto 2">
+                <h3>Colgantes</h3>
+                <p>Elije tu imagen deseada</p>
+            </div>
+            <div class="product-item">
+                <img src="product3.jpg" alt="Producto 3">
+                <h3>Cristales de vidrio</h3>
+                <p>Elige tu imagen deseada</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="nosotros" class="about">
+        <h2>Sobre Nosotros</h2>
+        <p>En Watch Visual, nos comprometemos a ofrecer productos que te ayuden a decorar mejor tu hogar y ofreserte los accesorios a detalle</p>
+    </section>
+
+    <section id="contacto" class="contact">
+        <h2>Contacto</h2>
+        <form id="contact-form">
+            <label for="name">Nombre:</label>
+            <input type="text" id="name" name="name" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            
+            <label for="message">Mensaje:</label>
+            <textarea id="message" name="message" required></textarea>
+            
+            <button type="submit">Enviar</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Watch visual. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

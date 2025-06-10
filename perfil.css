@@ -1,0 +1,118 @@
+/* Estilos para el panel lateral de perfil */
+
+.perfil-container {
+  position: fixed;
+  top: 0;
+  right: -300px; /* Oculto inicialmente a la derecha */
+  width: 300px;
+  height: 100%;
+  background-color: #fff;
+  box-shadow: -2px 0 5px rgba(0,0,0,0.3);
+  overflow-y: auto;
+  transition: right 0.3s ease;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.perfil-container.active {
+  right: 0; /* Visible al activarse */
+}
+
+.perfil-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.perfil-header img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.perfil-info label {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.perfil-info div {
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #333;
+}
+
+.perfil-links a {
+  display: block;
+  margin: 10px 0;
+  color: #007bff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.perfil-links a:hover {
+  text-decoration: underline;
+}
+
+#change-password-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+#change-password-form label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+#change-password-form input {
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#change-password-form button {
+  padding: 10px;
+  background-color: #6c63ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#change-password-form button:hover {
+  background-color: #574fd6;
+}
+
+#close-profile {
+  margin-top: auto;
+  padding: 10px;
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#close-profile:hover {
+  background-color: #b83232;
+}
+
+/* Botón cerrar sesión al pie */
+#logout-button {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#logout-button:hover {
+  background-color: #b83232;
+}
