@@ -3,8 +3,8 @@ const path = require('path'); // Importar path
 const express = require('express');
 const bcrypt = require('bcrypt'); // Importar bcrypt para encriptar contraseñas
 const { connUsuarios, connProductos } = require('./BD.js');
-const usuariosRouter = require('./Usuarios');
-const productosRouter = require('./Productos');
+const usuariosRouter = require('./Usuarios.js');
+const productosRouter = require('../Productos.js');
 const cors = require('cors');
 
 const app = express();

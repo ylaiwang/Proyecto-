@@ -1,4 +1,4 @@
-const { connProductos } = require('./BD.js'); // usa la conexión de BD.js
+const { connProductos } = require('./Back/BD.js'); // usa la conexión de BD.js
 
 // Definir esquema del producto con atributo comentarios
 const productoSchema = new connProductos.base.Schema({
