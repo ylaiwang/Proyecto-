@@ -63,6 +63,25 @@ header a:hover{
     overflow: hidden;
 }
 
+.Bienvenida h2{
+    font-size: 60px;
+}
+.Bienvenida p{
+    font-size: 20px;
+    margin: 20px 0;
+    line-height: 1.6em;
+    color: #fff;
+}
+
+/*boton ver producto en la bienvenida*/
+.cta-button {
+    color:white;
+    text-decoration: none;
+    border: 1px solid #ACACAC;
+    padding:10px 20px;
+    border-radius: 5px;
+}
+
 /*actualizaicones y noticias*/
 .actualizacion {
     display:flex;
@@ -112,7 +131,22 @@ header a:hover{
     font-size:14px;
     line-height: 1.6em;
 }
+.Nosotros {
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 0;
+}
 
+.modelo-button {
+    background-color:rgb(174, 126, 241);
+    color: white;
+    text-decoration: none;
+    border: 1px solid #ACACAC;
+    padding:10px 20px;
+    border-radius: 5px;
+}
 
 /*Pie de la pagina*/
 footer {
@@ -120,7 +154,7 @@ footer {
     color:#B7B7B7;
     height:60px;
     display:flex;
-    justify-content: left;
+    justify-content:center;
     align-items: center;
     font-size: 14px;
 }

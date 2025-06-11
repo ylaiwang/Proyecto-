@@ -1,4 +1,4 @@
-9// portada.js - Maneja la lógica para el botón de registro y perfil en Portada.html
+ // portada.js - Maneja la lógica para el botón de registro y perfil en Portada.html
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('portada.js cargado y DOM listo');
