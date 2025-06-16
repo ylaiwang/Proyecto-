@@ -3,79 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watch web-Modelos</title>
-    <link rel="stylesheet" href="modelos.css">
-    <link rel="stylesheet" href="portada.css">
+    <title>La Cosita - Tienda</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="page-container">
-      <header>
-           <h1><a href="C:\Users\Yuyen\Desktop\proyectos\Proyecto-\Front\Portada.html">Watch web</a></h1>
-      <!--menú de navegación-->
-      <nav>
-      <ul>
-          <li><a href="https://cosita.cl/tienda/">Todos los Productos</a></li>
-          <li><a href="#nosotros">Nosotros</a></li>
-          <li><a href="C:\Users\Yuyen\Desktop\proyectos\Proyecto-\Front\Portada.html">Actualizaciones</a></li>
-          <li id="nav-register"><a href="C:\Users\Yuyen\Desktop\Proyecto de titulo\login\login.html">Registro</a></li>
-          <li id="nav-profile" style="display:none;">
-            <button id="profile-button" style="background: none; border: none; cursor: pointer; padding: 0;">
-              <img src="login/perfil-de-usuario.jpg" alt="Usuario" style="width: 24px; height: 24px;">
-            </button>
-          </li>
-          <li><a href="#modelos">Modelos</a></li>
-      </ul>
-      </nav>
-      </header>
+    <div class="container">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="logo-container">
+                <img src="logo.png" alt="La Cosita" class="logo">
+                <h1 class="site-title">La Cosita</h1>
+            </div>
+            <nav class="main-nav">
+                <ul class="nav-menu">
+                    <li><a href="#" class="nav-link" data-section="inicio">Inicio</a></li>
+                    <li><a href="#" class="nav-link" data-section="servicios">Servicios</a></li>
+                    <li><a href="#" class="nav-link" data-section="personalizacion">Personalización</a></li>
+                    <li><a href="#" class="nav-link active" data-section="tienda">Tienda</a></li>
+                    <li><a href="#" class="nav-link" data-section="contacto">Contacto</a></li>
+                </ul>
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+            </nav>
+        </header>
 
-      <button class="menu-movil-toggle" style="display:none;">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-      </button>
+        <div class="content-wrapper">
+            <!-- Sidebar - Hidden on mobile by default -->
+            <aside class="sidebar" id="sidebar">
+                <button class="close-sidebar" id="closeSidebar">×</button>
+                <div class="category-item" data-category="camaras">
+                    <span>Cámaras y DVR</span>
+                    <span class="count">(1)</span>
+                </div>
+                <div class="category-item" data-category="cristales">
+                    <span>Cristales</span>
+                    <span class="count">(1)</span>
+                </div>
+                <div class="category-item" data-category="juguetes">
+                    <span>Juguetes</span>
+                    <span class="count">(3)</span>
+                </div>
+                <div class="category-item" data-category="ofertas">
+                    <span>Ofertas</span>
+                    <span class="count">(3)</span>
+                </div>
+                <div class="category-item" data-category="relojes">
+                    <span>Relojes</span>
+                    <span class="count">(2)</span>
+                </div>
+                <div class="category-item" data-category="tazas">
+                    <span>Tazas</span>
+                    <span class="count">(1)</span>
+                </div>
+                <div class="category-item active" data-category="todos">
+                    <span>Todos</span>
+                    <span class="count">(8)</span>
+                </div>
+            </aside>
 
-          <div class="menu-wrapper">
-              <!-- Sidebar - Hidden on mobile by default -->
-              <aside class="menusidebar" id="menusidebar">
-                  <button class="cerrar-sidebar" id="cerrarsidebar">×</button>
-                  <div class="productos" data-category="camaras">
-                      <span>Cámaras y DVR</span>
-                      <span class="cantidad">(1)</span>
-                  </div>
-                  <div class="productos" data-category="cristales">
-                      <span>Cristales</span>
-                      <span class="cantidad">(1)</span>
-                  </div>
-                  <div class="productos" data-category="juguetes">
-                      <span>Juguetes</span>
-                      <span class="cantidad">(3)</span>
-                  </div>
-                  <div class="productos" data-category="ofertas">
-                      <span>Ofertas</span>
-                      <span class="cantidad">(3)</span>
-                  </div>
-                  <div class="productos" data-category="relojes">
-                      <span>Relojes</span>
-                      <span class="cantidad">(2)</span>
-                  </div>
-                  <div class="productos" data-category="tazas">
-                      <span>Tazas</span>
-                      <span class="cantidad">(1)</span>
-                  </div>
-                  <div class="productos-active" data-category="todos">
-                      <span>Todos</span>
-                      <span class="cantidad">(8)</span>
-                  </div>
-              </aside>
+            <!-- Main Content Area -->
+            <main class="main-content" id="mainContent">
+                <!-- Content will be loaded here dynamically -->
+            </main>
+        </div>
+    </div>
 
-              <!-- Main para interaccion con el usuario en el documento de .js -->
-              <main class="main-content" id="mainContent"></main>
-          </div>
-      </div>
-
-    <!-- Templates for different sections -->
-<template id="plantilla-ventanas">
-        <nav class="visitaste">
+    <!--Ventanas o vistas visitadas-->
+    <template id="tienda-template">
+        <nav class="breadcrumb">
             <a href="#" class="breadcrumb-link">Inicio</a>
             <span class="breadcrumb-separator">/</span>
             <span class="breadcrumb-current">Tienda</span>
@@ -94,9 +92,9 @@
             </div>
         </div>
 
-        <div class="buscador-bar">
-          <input type="text" id="buscarproducto" placeholder="Buscar productos..." class="buscador-input">
-          <button class="buscador-button">
+        <div class="search-bar">
+          <input type="text" id="productSearch" placeholder="Buscar productos..." class="search-input">
+          <button class="search-button">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -104,9 +102,9 @@
           </button>
         </div>
 
-        <div class="productos-grid">
-            <!-- Producto 1 -->
-            <div class="producto-card" data-category="cristales" data-id="1">
+        <div class="products-grid">
+            <!-- Product 1 -->
+            <div class="product-card" data-category="cristales" data-id="1">
                 <div class="product-image">
                     <div class="placeholder-image">
                         <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
@@ -116,23 +114,23 @@
                         </svg>
                     </div>
                 </div>
-                <div class="producto-info">
-                    <h3 class="producto-title">Cristal</h3>
-                    <div class="producto-price">
+                <div class="product-info">
+                    <h3 class="product-title">Cristal Cuadrado con Base</h3>
+                    <div class="product-price">
                         <span class="price-range">$16.900 – $23.900</span>
                     </div>
                 </div>
             </div>
 
             <!-- Product 2 -->
-            <div class="producto-card" data-category="juguetes" data-id="2">
+            <div class="product-card" data-category="juguetes" data-id="2">
                 <div class="product-image">
                     <span class="sale-badge">¡Oferta!</span>
                     <img src="/placeholder.svg?height=200&width=200" alt="Hello Kitty" class="product-img">
                 </div>
-                <div class="producto-info">
-                    <h3 class="producto-title">Hello Kitty</h3>
-                    <div class="producto-price">
+                <div class="product-info">
+                    <h3 class="product-title">Hello Kitty</h3>
+                    <div class="product-price">
                         <span class="original-price">$12.000</span>
                         <span class="sale-price">$9.600</span>
                     </div>
@@ -162,7 +160,7 @@
         </div>
         <div class="welcome-content">
             <p>Bienvenido a nuestra tienda en línea. Aquí encontrarás una gran variedad de productos de alta calidad.</p>
-            <div class="featured-producto">
+            <div class="featured-products">
                 <h2>Productos destacados</h2>
                 <div class="featured-grid">
                     <div class="featured-card">
@@ -176,6 +174,59 @@
                         <h3>Lego</h3>
                         <p>$14.990</p>
                         <button class="view-button">Ver producto</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="servicios-template">
+        <div class="page-header">
+            <h1>Nuestros Servicios</h1>
+        </div>
+        <div class="services-content">
+            <div class="service-card">
+                <div class="service-icon">🚚</div>
+                <h3>Envío a domicilio</h3>
+                <p>Entregamos tus productos directamente a tu hogar en todo el país.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">🔧</div>
+                <h3>Instalación</h3>
+                <p>Ofrecemos servicios de instalación profesional para todos nuestros productos.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">🛠️</div>
+                <h3>Mantenimiento</h3>
+                <p>Servicio técnico y mantenimiento para garantizar la durabilidad de tus productos.</p>
+            </div>
+        </div>
+    </template>
+
+    <template id="personalizacion-template">
+        <div class="page-header">
+            <h1>Personalización</h1>
+        </div>
+        <div class="personalization-content">
+            <p>Personaliza tus productos según tus necesidades y preferencias.</p>
+            <div class="personalization-options">
+                <div class="option-card">
+                    <h3>Colores</h3>
+                    <div class="color-options">
+                        <span class="color-circle" style="background-color: #ff0000;"></span>
+                        <span class="color-circle" style="background-color: #00ff00;"></span>
+                        <span class="color-circle" style="background-color: #0000ff;"></span>
+                        <span class="color-circle" style="background-color: #ffff00;"></span>
+                        <span class="color-circle" style="background-color: #ff00ff;"></span>
+                    </div>
+                </div>
+                <div class="option-card">
+                    <h3>Tamaños</h3>
+                    <div class="size-options">
+                        <button class="size-button">S</button>
+                        <button class="size-button">M</button>
+                        <button class="size-button">L</button>
+                        <button class="size-button">XL</button>
                     </div>
                 </div>
             </div>
@@ -285,7 +336,7 @@
           <div class="tabs-header">
             <button class="tab-button active" data-tab="descripcion">Descripción</button>
             <button class="tab-button" data-tab="especificaciones">Especificaciones</button>
-            <button class="tab-button" data-tab="Comentario">Comentario</button>
+            <button class="tab-button" data-tab="opiniones">Opiniones</button>
           </div>
           
           <div class="tabs-content">
@@ -314,7 +365,7 @@
               </table>
             </div>
             
-            <div class="tab-panel" data-tab="Comentario">
+            <div class="tab-panel" data-tab="opiniones">
               <div class="opinion">
                 <div class="opinion-header">
                   <strong>María García</strong>
