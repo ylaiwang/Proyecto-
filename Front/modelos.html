@@ -1,348 +1,224 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watch web-Modelos</title>
-    <link rel="stylesheet" href="modelos.css">
-    <link rel="stylesheet" href="portada.css">
+  <meta charset="UTF-8">
+  <title>Watch web</title>
+  <link rel="stylesheet" href="modelos.css">
 </head>
 <body>
-    <div class="page-container">
-      <header>
-           <h1><a href="C:\Users\Yuyen\Desktop\proyectos\Proyecto-\Front\Portada.html">Watch web</a></h1>
-      <!--menú de navegación-->
-      <nav>
-      <ul>
-          <li><a href="https://cosita.cl/tienda/">Todos los Productos</a></li>
-          <li><a href="#nosotros">Nosotros</a></li>
-          <li><a href="C:\Users\Yuyen\Desktop\proyectos\Proyecto-\Front\Portada.html">Actualizaciones</a></li>
-          <li id="nav-register"><a href="C:\Users\Yuyen\Desktop\Proyecto de titulo\login\login.html">Registro</a></li>
-          <li id="nav-profile" style="display:none;">
-            <button id="profile-button" style="background: none; border: none; cursor: pointer; padding: 0;">
-              <img src="login/perfil-de-usuario.jpg" alt="Usuario" style="width: 24px; height: 24px;">
-            </button>
-          </li>
-          <li><a href="#modelos">Modelos</a></li>
+  <header class="main-header">
+    <div class="site-title">Watch web</div>
+    <nav class="main-nav">
+      <ul class="nav-menu">
+        <li><a href="portada.html" class="nav-link">Portada</a></li>
+        <li id="nav-register" style="display: inline-block;"><a href="/login/login.html" class="nav-link">Registro</a></li>
+        <li id="profile-button" rel="stylesheet" href="perfil.css" class="nav-link">Perfil</li>
       </ul>
-      </nav>
-      </header>
+    </nav>
+  </header>   
 
-      <button class="menu-movil-toggle" style="display:none;">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-      </button>
+<!-- Panel lateral de perfil de usuario -->
+<div id="perfil-panel" class="perfil-panel">
+  <button class="cerrar-perfil" id="close-profile" type="button">×</button>
+  <div class="perfil-avatar">
+    <img src="/perfil-de-usuario.jpg" alt="Usuario" style="width:80px;height:80px;border-radius:50%;border:3px solid #805ad5;">
+    <div id="user-name" style="margin-top: 10px; font-weight: bold; text-align: center;"></div>
+    <div id="user-email" style="font-size: 0.9em; color: #666; text-align: center; margin-bottom: 10px;"></div>
+  </div>
+  <!-- Botón para seleccionar imagen -->
+  <form id="formImagen" style="margin-bottom: 10px;">
+    <label for="imagenPerfil">
+      <img id="preview" src="imagenes/default.png" alt="Usuario" style="width:80px; border-radius:50%;">
+    </label>
+    <input type="file" id="imagenPerfil" name="imagenPerfil" accept="image/*" style="display:none;">
+  </form>
 
-          <div class="menu-wrapper">
-              <!-- Sidebar - Hidden on mobile by default -->
-              <aside class="menusidebar" id="menusidebar">
-                  <button class="cerrar-sidebar" id="cerrarsidebar">×</button>
-                  <div class="productos" data-category="camaras">
-                      <span>Cámaras y DVR</span>
-                      <span class="cantidad">(1)</span>
-                  </div>
-                  <div class="productos" data-category="cristales">
-                      <span>Cristales</span>
-                      <span class="cantidad">(1)</span>
-                  </div>
-                  <div class="productos" data-category="juguetes">
-                      <span>Juguetes</span>
-                      <span class="cantidad">(3)</span>
-                  </div>
-                  <div class="productos" data-category="ofertas">
-                      <span>Ofertas</span>
-                      <span class="cantidad">(3)</span>
-                  </div>
-                  <div class="productos" data-category="relojes">
-                      <span>Relojes</span>
-                      <span class="cantidad">(2)</span>
-                  </div>
-                  <div class="productos" data-category="tazas">
-                      <span>Tazas</span>
-                      <span class="cantidad">(1)</span>
-                  </div>
-                  <div class="productos-active" data-category="todos">
-                      <span>Todos</span>
-                      <span class="cantidad">(8)</span>
-                  </div>
-              </aside>
+  <div class="perfil-opciones">
+    <button class="perfil-btn" id="logout-button">Cerrar sesión</button>
+    <button class="perfil-btn" id="change-name-btn">Cambiar nombre</button>
+    <button class="perfil-btn" id="change-password-btn">Cambiar contraseña</button>
+    <button class="perfil-btn" id="delete-account-btn" style="background-color: #e53e3e; margin-top: 10px;">Borrar cuenta</button>
+  </div>
 
-              <!-- Main para interaccion con el usuario en el documento de .js -->
-              <main class="main-content" id="mainContent"></main>
-          </div>
-      </div>
+  <!-- Formulario para cambiar nombre (oculto por defecto) -->
+  <form id="change-name-form" style="display:none; margin-top:10px;">
+    <input type="text" id="new-name" placeholder="Nuevo nombre" required>
+    <button type="submit" class="perfil-btn">Guardar nombre</button>
+  </form>
 
-    <!-- Templates for different sections -->
-<template id="plantilla-ventanas">
-        <nav class="visitaste">
-            <a href="#" class="breadcrumb-link">Inicio</a>
-            <span class="breadcrumb-separator">/</span>
-            <span class="breadcrumb-current">Tienda</span>
-        </nav>
+  <!-- Formulario para cambiar contraseña (oculto por defecto) -->
+  <form id="change-password-form" style="display:none; margin-top:10px;">
+    <input type="password" id="new-password" placeholder="Nueva contraseña" required>
+    <button type="submit" class="perfil-btn">Guardar contraseña</button>
+    <div id="password-change-message" style="margin-top:8px;font-size:0.95em;"></div>
+  </form>
+</div>
+  
+  <!--Menu de navegación lateral-->
+  <div class="page-container">
+    <aside class="menusidebar">
+      <div class="productos">Cámaras y DVR <span class="cantidad">(1)</span></div>
+      <div class="productos">Cristales <span class="cantidad">(1)</span></div>
+      <div class="productos">Figuras <span class="cantidad">(3)</span></div>
+      <div class="productos">Ofertas <span class="cantidad">(3)</span></div>
+      <div class="productos">Relojes <span class="cantidad">(2)</span></div>
+      <div class="productos">Tazas <span class="cantidad">(1)</span></div>
+      <div class="productos productos-active">Todos <span class="cantidad">(8)</span></div>
+    </aside>
+    <main class="main-content">
+      <!-- Aquí puedes agregar el contenido principal -->
+       <!-- Migas de pan -->
+  <nav class="breadcrumb">
+    <a href="modelos.html" class="breadcrumb-link">Inicio</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Tienda</span>
+  </nav>
 
-        <div class="page-header">
-            <h1>Tienda</h1>
-            <div class="results-info">
-                <span class="results-count">Mostrando los 8 resultados</span>
-                <select class="sort-dropdown">
-                    <option>Orden predeterminado</option>
-                    <option>Precio: menor a mayor</option>
-                    <option>Precio: mayor a menor</option>
-                    <option>Más recientes</option>
-                </select>
-            </div>
-        </div>
+  <!-- Título de la página -->
+  <div class="page-header">
+    <h1>Tienda</h1>
+  </div>
 
-        <div class="buscador-bar">
-          <input type="text" id="buscarproducto" placeholder="Buscar productos..." class="buscador-input">
-          <button class="buscador-button">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-          </button>
-        </div>
+  <!-- Resultados y orden -->
+  <div class="results-info">
+    <span class="results-cantidad">Mostrando 3 resultados</span>
+    <select class="sort-dropdown">
+      <option>Orden predeterminado</option>
+      <option>Precio: menor a mayor</option>
+      <option>Precio: mayor a menor</option>
+      <option>Nombre: A-Z</option>
+      <option>Nombre: Z-A</option>
+    </select>
+  </div>
 
-        <div class="productos-grid">
-            <!-- Producto 1 -->
-            <div class="producto-card" data-category="cristales" data-id="1">
-                <div class="product-image">
-                    <div class="placeholder-image">
-                        <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
-                            <rect width="100" height="100" fill="#f0f0f0"/>
-                            <path d="M30 70L50 50L70 70" stroke="#ccc" stroke-width="2" fill="none"/>
-                            <circle cx="40" cy="35" r="5" fill="#ccc"/>
-                        </svg>
-                    </div>
-                </div>
-                <div class="producto-info">
-                    <h3 class="producto-title">Cristal</h3>
-                    <div class="producto-price">
-                        <span class="price-range">$16.900 – $23.900</span>
-                    </div>
-                </div>
-            </div>
+  <!-- Buscador -->
+  <div class="buscador-bar">
+    <input type="text" class="buscador-input" placeholder="Buscar productos...">
+    <button class="buscador-button" aria-label="Buscar productos">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+    </button>
+    <button id="btnAgregarProducto" style="display:none; margin-left: 10px; padding: 6px 12px; background-color: #805ad5; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+      Añadir productos
+    </button>
+  </div>
 
-            <!-- Product 2 -->
-            <div class="producto-card" data-category="juguetes" data-id="2">
-                <div class="product-image">
-                    <span class="sale-badge">¡Oferta!</span>
-                    <img src="/placeholder.svg?height=200&width=200" alt="Hello Kitty" class="product-img">
-                </div>
-                <div class="producto-info">
-                    <h3 class="producto-title">Hello Kitty</h3>
-                    <div class="producto-price">
-                        <span class="original-price">$12.000</span>
-                        <span class="sale-price">$9.600</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 3 -->
-            <div class="product-card" data-category="juguetes" data-id="3">
-                <div class="product-image">
-                    <span class="sale-badge">¡Oferta!</span>
-                    <img src="/placeholder.svg?height=200&width=200" alt="Lego" class="product-img">
-                </div>
-                <div class="product-info">
-                    <h3 class="product-title">Lego</h3>
-                    <div class="product-price">
-                        <span class="original-price">$19.990</span>
-                        <span class="sale-price">$14.990</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <template id="inicio-template">
-        <div class="page-header">
-            <h1>Bienvenido a La Cosita</h1>
-        </div>
-        <div class="welcome-content">
-            <p>Bienvenido a nuestra tienda en línea. Aquí encontrarás una gran variedad de productos de alta calidad.</p>
-            <div class="featured-producto">
-                <h2>Productos destacados</h2>
-                <div class="featured-grid">
-                    <div class="featured-card">
-                        <img src="/placeholder.svg?height=200&width=200" alt="Producto destacado" class="featured-img">
-                        <h3>Hello Kitty</h3>
-                        <p>$9.600</p>
-                        <button class="view-button">Ver producto</button>
-                    </div>
-                    <div class="featured-card">
-                        <img src="/placeholder.svg?height=200&width=200" alt="Producto destacado" class="featured-img">
-                        <h3>Lego</h3>
-                        <p>$14.990</p>
-                        <button class="view-button">Ver producto</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <template id="contacto-template">
-        <div class="page-header">
-            <h1>Contacto</h1>
-        </div>
-        <div class="contact-content">
-            <div class="contact-info">
-                <div class="contact-item">
-                    <strong>Dirección:</strong>
-                    <p>Av. Principal 123, Ciudad</p>
-                </div>
-                <div class="contact-item">
-                    <strong>Teléfono:</strong>
-                    <p>+123 456 7890</p>
-                </div>
-                <div class="contact-item">
-                    <strong>Email:</strong>
-                    <p>info@lacosita.com</p>
-                </div>
-            </div>
-            <form class="contact-form">
-                <div class="form-group">
-                    <label for="name">Nombre</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="message">Mensaje</label>
-                    <textarea id="message" name="message" rows="5" required></textarea>
-                </div>
-                <button type="submit" class="submit-button">Enviar mensaje</button>
-            </form>
-        </div>
-    </template>
-
-    <template id="producto-detalle-template">
-      <nav class="breadcrumb">
-        <a href="#" class="breadcrumb-link">Inicio</a>
-        <span class="breadcrumb-separator">/</span>
-        <a href="#" class="breadcrumb-link tienda-link">Tienda</a>
-        <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-current producto-titulo"></span>
-      </nav>
-
-      <div class="producto-detalle">
-        <div class="producto-volver">
-          <button class="volver-button">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="19" y1="12" x2="5" y2="12"></line>
-              <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
-            Volver a la tienda
-          </button>
-        </div>
-        
-        <div class="producto-contenido">
-          <div class="producto-imagen-grande">
-            <img src="/placeholder.svg" alt="" class="producto-img-principal">
-            <span class="oferta-badge">¡Oferta!</span>
-          </div>
-          
-          <div class="producto-info-detalle">
-            <h1 class="producto-titulo-detalle"></h1>
-            
-            <div class="producto-precio-detalle">
-              <span class="precio-original"></span>
-              <span class="precio-actual"></span>
-            </div>
-            
-            <div class="producto-descripcion">
-              <p></p>
-            </div>
-            
-            <div class="producto-cantidad">
-              <label for="cantidad">Cantidad:</label>
-              <div class="cantidad-control">
-                <button class="cantidad-menos">-</button>
-                <input type="number" id="cantidad" value="1" min="1" max="10">
-                <button class="cantidad-mas">+</button>
-              </div>
-            </div>
-            
-            <button class="agregar-carrito">
-              Añadir al carrito
-            </button>
-            
-            <div class="producto-meta">
-              <div class="producto-categoria">
-                <strong>Categoría:</strong> <span></span>
-              </div>
-              <div class="producto-sku">
-                <strong>SKU:</strong> <span></span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="producto-tabs">
-          <div class="tabs-header">
-            <button class="tab-button active" data-tab="descripcion">Descripción</button>
-            <button class="tab-button" data-tab="especificaciones">Especificaciones</button>
-            <button class="tab-button" data-tab="Comentario">Comentario</button>
-          </div>
-          
-          <div class="tabs-content">
-            <div class="tab-panel active" data-tab="descripcion">
-              <p>Descripción detallada del producto. Esta sección contiene toda la información relevante sobre el producto, sus características y beneficios.</p>
-            </div>
-            
-            <div class="tab-panel" data-tab="especificaciones">
-              <table class="specs-table">
-                <tr>
-                  <th>Dimensiones</th>
-                  <td>10 × 10 × 10 cm</td>
-                </tr>
-                <tr>
-                  <th>Material</th>
-                  <td>Plástico / Metal</td>
-                </tr>
-                <tr>
-                  <th>Color</th>
-                  <td>Varios</td>
-                </tr>
-                <tr>
-                  <th>Peso</th>
-                  <td>0.5 kg</td>
-                </tr>
-              </table>
-            </div>
-            
-            <div class="tab-panel" data-tab="Comentario">
-              <div class="opinion">
-                <div class="opinion-header">
-                  <strong>María García</strong>
-                  <div class="estrellas">★★★★★</div>
-                </div>
-                <p>Excelente producto, llegó en perfectas condiciones y funciona muy bien.</p>
-              </div>
-              
-              <div class="opinion">
-                <div class="opinion-header">
-                  <strong>Juan Pérez</strong>
-                  <div class="estrellas">★★★★☆</div>
-                </div>
-                <p>Buen producto, pero el envío tardó más de lo esperado.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="productos-relacionados">
-          <h2>Productos relacionados</h2>
-          <div class="relacionados-grid">
-            <!-- Los productos relacionados se cargarán dinámicamente -->
-          </div>
+  <!-- Grid de productos -->
+  <div class="productoos-grid">
+    <!-- Producto 1 -->
+    <div class="productoo-card">
+      <div class="producto-image">
+        <div class="placeholder-image">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2">
+            <circle cx="12" cy="10" r="3"></circle>
+            <path d="M4 20v-1a4 4 0 014-4h8a4 4 0 014 4v1"></path>
+          </svg>
         </div>
       </div>
-    </template>
+      <div class="producto-info">
+        <div class="producto-title">Cristal Cuadrado con Base</div>
+        <div class="producto-price">
+          <span class="price-range">$16.900 – $23.900</span>
+        </div>
+      </div>
+    </div>
+    <!-- Producto 2 -->
+    <div class="productoo-card">
+      <div class="producto-image">
+        <span class="sale-badge">¡Oferta!</span>
+        <img src="hello-kitty.jpg" alt="Hello Kitty" class="producto-img" style="display:none;">
+      </div>
+      <div class="producto-info">
+        <div class="producto-title">Hello Kitty</div>
+        <div class="producto-price">
+          <span class="original-price">$12.000</span>
+          <span class="sale-price">$9.600</span>
+        </div>
+      </div>
+    </div>
+    <!-- Producto 3 (puedes agregar más productos aquí) -->
+  </div>
+    </main>
+  </div>
 
-    <script src="script.js"></script>
+  <div id="detalle-producto" class="productoo-detalle" style="display:none;">
+  <button class="volver-button" onclick="cerrarDetalle()">← Volver</button>
+  <div class="productoo-contenido">
+    <div class="productoo-imagen-grande">
+      <img id="detalle-img" class="productoo-img-principal" src="" alt="">
+      <span id="detalle-oferta" class="oferta-badge" style="display:none;">¡Oferta!</span>
+    </div>
+    <div class="productoo-info-detalle">
+      <h2 id="detalle-titulo" class="productoo-titulo-detalle"></h2>
+      <div class="productoo-precio-detalle">
+        <span id="detalle-precio-original" class="precio-original"></span>
+        <span id="detalle-precio-actual" class="precio-actual"></span>
+      </div>
+      <div id="detalle-descripcion" class="productoo-descripcion"></div>
+      <!-- Aquí puedes agregar más info: stock, botones, etc. -->
+    </div>
+  </div>
+</div>
+
+<form id="formProducto" style="display:none; margin-top: 20px;">
+  <div class="form-row">
+    <label for="nombre">Nombre</label>
+    <input type="text" id="nombre" name="nombre" placeholder="Nombre del producto" required>
+    <label for="categoria">Categoría</label>
+    <select id="categoria" name="categoria" required>
+      <option value="" disabled selected>Seleccione una categoría</option>
+      <option value="camaras">Cámaras y DVR</option>
+      <option value="cristales">Cristales</option>
+      <option value="figuras">Figuras</option>
+      <option value="ofertas">Ofertas</option>
+      <option value="relojes">Relojes</option>
+      <option value="tazas">Tazas</option>
+      <option value="todos">Todos</option>
+    </select>
+  </div>
+
+  <div class="form-row">
+    <label for="descripcion">Descripción</label>
+    <textarea id="descripcion" name="descripcion" placeholder="Descripción" required rows="4" style="resize: vertical;"></textarea>
+  </div>
+
+  <div class="form-row">
+    <label for="precio">Precio</label>
+    <input type="number" id="precio" name="precio" placeholder="Precio" required min="1" step="any">
+  </div>
+
+  <div class="form-row">
+    <label for="imagen">Imagen</label>
+    <input type="file" id="imagen" name="imagen" accept="image/*">
+  </div>
+
+  <div class="form-row">
+    <label for="stock">Cantidad en stock</label>
+    <input type="number" id="stock" name="stock" placeholder="Cantidad en stock" required min="0" step="1">
+  </div>
+
+  <button type="submit">Agregar producto</button>
+</form>
+
+<!-- Modal de edición de producto -->
+<div id="editarProductoModal" class="modal-editar">
+  <form id="formEditarProducto" class="form-editar">
+    <h3>Editar Producto</h3>
+    <input type="hidden" name="id" id="editarId">
+    <input type="hidden" name="tipo" id="editarTipo">
+    <input type="text" name="nombre" id="editarNombre" placeholder="Nombre" required>
+    <input type="text" name="descripcion" id="editarDescripcion" placeholder="Descripción" required>
+    <input type="number" name="precio" id="editarPrecio" placeholder="Precio" required>
+    <input type="text" name="imagen" id="editarImagen" placeholder="URL de imagen">
+    <div class="editar-botones">
+      <button type="button" onclick="cerrarModalEdicion()">Cancelar</button>
+      <button type="submit">Guardar</button>
+    </div>
+  </form>
+</div>
+
+  <script src="modelos.js"></script>
 </body>
 </html>

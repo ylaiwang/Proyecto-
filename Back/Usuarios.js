@@ -1,85 +1,203 @@
-/**
- * Archivo Usuarios.js
- * Configura la conexión a la base de datos "usuarios" usando mongoose,
- * define el esquema y modelo de usuario, y configura rutas para manejar peticiones HTTP.
- */
-
-const { connUsuarios } = require('./BD.js'); // Importar conexión a DB usuarios
-const express = require('express');          // Framework web Express
-const bodyParser = require('body-parser');   // Middleware para parsear JSON
-const bcrypt = require('bcrypt');             // Para encriptar y comparar contraseñas
+const express = require('express');
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
-// Middleware para loguear peticiones entrantes (método y URL)
-router.use((req, res, next) => {
-  console.log(`Petición recibida: ${req.method} ${req.url}`);
-  next();
-});
-
-// Middleware para parsear JSON en las peticiones
-router.use(bodyParser.json());
-
-// Usar la conexión connUsuarios para la base de datos "usuarios"
-const conn = connUsuarios;
-
-// Evento cuando la conexión a la base de datos se abre exitosamente
-conn.once('open', () => {
-  console.log('Conexión exitosa a la base de datos usuarios');
-});
-
-// Evento para manejar errores en la conexión a la base de datos
-conn.on('error', (err) => {
-  console.error('Error en la conexión a la base de datos usuarios:', err);
-});
-
-// Definición del esquema para usuarios usando connUsuarios.Schema
-const usuarioSchema = new connUsuarios.base.Schema({
+const usuarioSchema = new mongoose.Schema({
   nombre: String,
   correo: { type: String, unique: true },
   password: String,
-  username: String,
-  website: String,
-  bio: String
+  rol: { type: String, enum: ['usuario', 'admin'], default: 'usuario' }
 });
 
-// Crear el modelo Usuario usando connUsuarios.model
-const Usuario = conn.model('Usuario', usuarioSchema);
-
-// Endpoint para login
-router.post('/login', async (req, res) => {
-  const { correo, password } = req.body;
-  if (!correo || !password) {
-    return res.status(400).json({ error: 'Correo y contraseña son requeridos' });
-  }
+/* Middleware para hashear la contraseña antes de guardar
+usuarioSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
   try {
-    const usuario = await Usuario.findOne({ correo });
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+*/
+
+// Método para comparar contraseña
+/* Comentado para comprobar credenciales sin hash
+usuarioSchema.methods.comparePassword = async function(candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
+*/
+
+// Usar comparación simple sin hash
+usuarioSchema.methods.comparePassword = async function(candidatePassword) {
+  return candidatePassword === this.password;
+};
+// usuarioSchema.methods.comparePassword = async function(candidatePassword) {
+//   return candidatePassword === this.password;
+// };
+
+const Usuario = mongoose.model('Usuario', usuarioSchema);
+
+// Middleware para validar token JWT y extraer usuario
+const autenticarToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Token no proporcionado' });
+
+  jwt.verify(token, 'secreto_super_seguro', (err, user) => {
+    if (err) return res.status(403).json({ error: 'Token inválido' });
+    req.user = user;
+    next();
+  });
+};
+
+// Ruta POST para crear un usuario
+router.post('/', async (req, res) => {
+  try {
+    console.log('POST /usuarios body:', req.body); // Log para depuración
+    const { nombre, correo, password, rol } = req.body;
+    if (!nombre || !correo || !password) {
+      return res.status(400).json({ error: 'Faltan campos obligatorios' });
+    }
+    // Verificar si el correo ya está registrado
+    const usuarioExistente = await Usuario.findOne({ correo });
+    if (usuarioExistente) {
+      return res.status(400).json({ error: 'Correo ya registrado' });
+    }
+    const nuevoUsuario = new Usuario({ nombre, correo, password, rol: rol || 'usuario' });
+    await nuevoUsuario.save();
+    res.status(201).json({ mensaje: 'Usuario creado', usuario: nuevoUsuario });
+  } catch (error) {
+    console.error('Error en POST /usuarios:', error);
+    res.status(500).json({ error: 'Error al crear usuario' });
+  }
+});
+
+// Ruta POST para login
+router.post('/login', async (req, res) => {
+  try {
+    console.log('POST /login body:', req.body); // Log para depuración
+    const { email, password } = req.body;
+    if (!email || !password) {
+      console.error('Faltan campos obligatorios en login');
+      return res.status(400).json({ error: 'Faltan campos obligatorios' });
+    }
+    const usuario = await Usuario.findOne({ correo: email });
     if (!usuario) {
+      console.error('Usuario no encontrado:', email);
       return res.status(401).json({ error: 'Usuario no encontrado' });
     }
-    const passwordMatch = await bcrypt.compare(password, usuario.password);
-    if (!passwordMatch) {
+    console.log('Usuario encontrado:', usuario);
+    const isMatch = await usuario.comparePassword(password);
+    console.log('Resultado comparación contraseña:', isMatch);
+    if (!isMatch) {
+      console.error('Contraseña incorrecta para usuario:', email);
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
-    // Login exitoso
-    return res.json({ message: 'Login exitoso', usuario: { id: usuario._id, nombre: usuario.nombre, correo: usuario.correo } });
+    // Generar token JWT
+    const token = jwt.sign({ id: usuario._id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol }, 'secreto_super_seguro', { expiresIn: '1h' });
+    res.json({ mensaje: 'Login exitoso', token, usuario: { id: usuario._id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol } });
   } catch (error) {
-    console.error('Error en login:', error);
-    return res.status(500).json({ error: 'Error interno del servidor' });
+    console.error('Error en POST /login:', error);
+    res.status(500).json({ error: 'Error en el servidor' });
   }
 });
 
-// Ejemplo de ruta: obtener todos los usuarios
-router.get('/', async (req, res) => {
+// Middleware para verificar que el usuario es admin
+const soloAdmin = (req, res, next) => {
+  if (req.user && req.user.rol === 'admin') {
+    next();
+  } else {
+    res.status(403).json({ error: 'Acceso denegado. Solo administradores.' });
+  }
+};
+
+
+/* Función para hashear (cifrar) una contraseña usando bcrypt.*/
+async function hashPassword(password) {
+  const salt = await bcrypt.genSalt(10);
+  return bcrypt.hash(password, salt);
+}
+
+
+/* Función para reiniciar los roles y usuarios en la base de datos. */
+async function resetRolesAndUsers() {
   try {
-    const usuarios = await Usuario.find();
-    res.json(usuarios);
-  } catch (err) {
-    res.status(500).json({ error: 'Error al obtener usuarios' });
+    // Conexión a la base de datos 'admin' para manejar administradores
+    const adminConnection = await mongoose.createConnection('mongodb://localhost:27017/admin', {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+
+    // Definición del esquema para administradores
+    const adminSchema = new mongoose.Schema({
+      nombre: String,
+      correo: { type: String, unique: true },
+      password: String,
+      rol: { type: String, default: 'admin' }
+    }, { collection: 'administrador' });
+
+    // Modelo para administradores
+    const Admin = adminConnection.model('Admin', adminSchema, 'administrador');
+
+    // Eliminar todos los administradores existentes
+    await Admin.deleteMany({});
+
+    // Conexión a la base de datos 'usuarios' para manejar usuarios comunes
+    const usuarioConnection = await mongoose.createConnection('mongodb://localhost:27017/usuarios', {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+
+    // Definición del esquema para usuarios comunes
+    const usuarioSchema = new mongoose.Schema({
+      nombre: String,
+      correo: { type: String, unique: true },
+      password: String,
+      rol: { type: String, default: 'usuario' }
+    }, { collection: 'usuarios' });
+
+    // Modelo para usuarios comunes
+    const UsuarioModel = usuarioConnection.model('Usuario', usuarioSchema, 'usuarios');
+
+    // Eliminar todos los usuarios existentes
+    await UsuarioModel.deleteMany({});
+
+    
+    // Hashear las contraseñas e insertar administradores
+    for (const admin of admins) {
+      admin.password = await hashPassword(admin.password);
+      await new Admin(admin).save();
+    }
+
+    // Hashear las contraseñas e insertar usuarios comunes
+    for (const usuario of usuarios) {
+      usuario.password = await hashPassword(usuario.password);
+      await new UsuarioModel(usuario).save();
+    }
+
+    console.log('Roles y usuarios reiniciados correctamente.');
+  } catch (error) {
+    console.error('Error al reiniciar roles y usuarios:', error);
+  }
+}
+
+router.delete('/usuarios/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const deletedUser = await Usuario.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+    res.json({ mensaje: 'Usuario eliminado correctamente' });
+  } catch (error) {
+    console.error('Error al eliminar usuario:', error);
+    res.status(500).json({ error: 'Error en el servidor' });
   }
 });
 
-// Puedes agregar más rutas aquí (registro, login, etc.)
-
-// Exportar el router para usarlo en conector.js
-module.exports = router;
+module.exports = { router, Usuario, soloAdmin, autenticarToken, resetRolesAndUsers };

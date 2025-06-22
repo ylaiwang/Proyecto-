@@ -1,0 +1,222 @@
+* {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: #151a28;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .login-container {
+      background: #1b2230;
+      color: #fff;
+      padding: 2.2rem 2.5rem 1.5rem 2.5rem;
+      border-radius: 18px;
+      width: 370px;
+      margin: 40px auto;
+      box-shadow: 0 8px 32px 0 rgba(31,38,135,0.37);
+      text-align: center;
+      position: relative;
+    }
+    h2 {
+      margin-bottom: 0.2rem;
+      font-size: 2rem;
+    }
+    .subtitle {
+      color: #b0b8d1;
+      font-size: 1.05rem;
+      margin-bottom: 1.2rem;
+    }
+    
+    .tabs {
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 0;
+      gap: 0;
+    }
+    
+    .tab {
+      background: none;
+      border: none;
+      color: #b0b8d1;
+      font-weight: 500;
+      font-size: 1.08rem;
+      padding: 0.9rem 1.5rem 0.7rem 1.5rem;
+      cursor: pointer;
+      border-radius: 10px 10px 0 0;
+      transition: color 0.2s, background 0.2s;
+      outline: none;
+      margin-bottom: -2px;
+      border-bottom: 3px solid transparent;
+    }
+    
+    .tab.active {
+      color: #fff;
+      background: #7c3aed;
+      border-bottom: 3px solid #7c3aed;
+      font-weight: bold;
+    }
+    
+    .tab-underline {
+      width: 100%;
+      height: 1px;
+      background: #232b3e;
+      margin-bottom: 1rem;
+    }
+    
+    .tab-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      margin-top: 0.5rem;
+      text-align: left;
+    }
+    
+    input[type="email"], input[type="password"], input[type="text"] {
+      padding: 0.7rem;
+      border-radius: 8px;
+      border: none;
+      background: #232b3e;
+      color: #fff;
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+    }
+    
+    input[type="email"]:focus, input[type="password"]:focus, input[type="text"]:focus {
+      outline: 2px solid #7c3aed;
+    }
+    
+    label {
+      font-size: 1rem;
+      color: #b0b8d1;
+      margin-bottom: 0.1rem;
+      margin-left: 0.1rem;
+    }
+    
+    .main-btn {
+      background: #7c3aed;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.8rem 0;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: background 0.2s;
+    }
+    
+    .main-btn:hover {
+      background: #a18aff;
+    }
+    
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.2rem;
+      margin-bottom: 0.2rem;
+    }
+    
+    .forgot-link {
+      color: #a18aff;
+      font-size: 0.95rem;
+      text-align: right;
+      display: block;
+      margin-bottom: 0.5rem;
+      text-decoration: none;
+      margin-top: -0.3rem;
+    }
+    
+    .error-msg {
+      color: #ff4d4f;
+      font-size: 0.97rem;
+      margin-top: -0.3rem;
+    }
+    
+    .success-msg {
+      color: #4caf50;
+      font-size: 0.97rem;
+      margin-top: -0.3rem;
+    }
+    
+    .divider {
+      margin-top: 1.2rem;
+      text-align: center;
+      color: #b0b8d1;
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+      position: relative;
+    }
+    
+    .divider span {
+      background: #1b2230;
+      padding: 0 1rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .divider:before, .divider:after {
+      content: "";
+      display: inline-block;
+      width: 40%;
+      height: 1px;
+      background: #232b3e;
+      vertical-align: middle;
+      position: absolute;
+      top: 50%;
+    }
+    
+    .divider:before {
+      left: 0;
+    }
+    
+    .divider:after {
+      right: 0;
+    }
+    
+    .password-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .password-wrapper input[type="password"],
+    .password-wrapper input[type="text"] {
+      flex: 1;
+      padding-right: 38px; /* espacio para el ojito */
+    }
+    .eye-btn {
+      background: none;
+      border: none;
+      position: absolute;
+      right: 8px;
+      cursor: pointer;
+      padding: 0;
+      outline: none;
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+    .eye-btn svg {
+      display: block;
+    }
+    .eye-btn:active svg ellipse,
+    .eye-btn:active svg circle {
+      stroke: #7c3aed;
+      fill: #7c3aed;
+    }
+    
+    @media (max-width: 430px) {
+      .login-container {
+        width: 98vw;
+        padding: 1.2rem 0.5rem 1rem 0.5rem;
+      }
+      .tab {
+        font-size: 0.95rem;
+        padding: 0.7rem 0.5rem 0.5rem 0.5rem;
+      }
+    }

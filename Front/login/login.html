@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Bienvenido</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+  <div class="login-container">
+    <h2>Bienvenido</h2>
+    <p class="subtitle">Inicia sesión o crea una cuenta</p>
+    <div class="tabs">
+      <button id="tab-login" class="tab active">Iniciar Sesión</button>
+      <button id="tab-register" class="tab">Registrarse</button>
+    </div>
+    <div class="tab-underline"></div>
+    <!-- Login -->
+    <form id="login-section" class="tab-section">
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" placeholder="nombre@ejemplo.com" required>
+      <label for="login-password">Contraseña</label>
+      <div class="password-wrapper">
+        <input type="password" id="login-password" placeholder="Contraseña" required>
+        <button type="button" id="toggle-login-password" class="eye-btn" tabindex="-1">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <ellipse cx="12" cy="12" rx="9" ry="6" stroke="#666" stroke-width="2" fill="none"/>
+            <circle cx="12" cy="12" r="2" fill="#666"/>
+          </svg>
+        </button>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="login-remember">
+        <label for="login-remember">Permanecer conectado</label>
+      </div>
+      <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+      <button type="submit" class="main-btn">Iniciar sesión</button>
+      <div id="login-error" style="color: red;"></div>
+      <div id="login-success" style="color: green; margin-top: 10px;"></div>
+    </form>
+    <!-- Registro usuario/admin -->
+    <form id="register-section" class="tab-section" style="display:none;">
+      <label for="register-nombre">Nombre</label>
+      <input type="text" id="register-nombre" placeholder="Nombre" required>
+      <label for="register-email">Email</label>
+      <input type="email" id="register-email" placeholder="nombre@ejemplo.com" required>
+      <label for="register-password">Contraseña</label>
+      <div class="password-wrapper">
+        <input type="password" id="register-password" placeholder="Contraseña" required>
+        <button type="button" id="toggle-register-password" class="eye-btn" tabindex="-1">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <ellipse cx="12" cy="12" rx="9" ry="6" stroke="#666" stroke-width="2" fill="none"/>
+            <circle cx="12" cy="12" r="2" fill="#666"/>
+          </svg>
+        </button>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="register-admin-checkbox">
+        <label for="register-admin-checkbox">Registrar como administrador</label>
+      </div>
+      <button type="submit" class="main-btn">Registrarse</button>
+      <div id="register-error" class="error-msg"></div>
+      <div id="register-success" class="success-msg"></div>
+    </form>
+    <div class="divider">
+      <span>O CONTINÚA CON</span>
+    </div>
+  </div>
+  <script src="login.js"></script>
+</body>
+</html>
