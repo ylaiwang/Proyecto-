@@ -4,10 +4,50 @@ document.addEventListener('DOMContentLoaded', () => {
   const perfilPanel = document.getElementById('perfil-panel');
   const profileButton = document.getElementById('profile-button');
   const closeProfileBtn = document.getElementById('close-profile');
+  const navRegister = document.getElementById('nav-register');
+
+  // Función para decodificar el payload del token JWT
+  function parseJwt(token) {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Obtener usuario y rol
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
+  console.log('Usuario:', usuario);
+  let userRole = null;
+  if (usuario && usuario.rol) {
+    userRole = usuario.rol;
+    console.log('User role:', userRole);
+  }
+  // Mostrar perfil si hay usuario autenticado
+  if (usuario) {
+    if (profileButton) profileButton.style.display = 'inline-block';
+    if (navRegister) navRegister.style.display = 'none';
+  } else {
+    if (profileButton) profileButton.style.display = 'none';
+    if (navRegister) navRegister.style.display = 'inline-block';
+  }
+  // Mostrar u ocultar botón "Añadir productos" según rol
+  if (userRole === 'admin') {
+    if (btnAgregarProducto) btnAgregarProducto.style.display = 'inline-block';
+  } else {
+    if (btnAgregarProducto) btnAgregarProducto.style.display = 'none';
+  }
 
   // Mostrar/ocultar formulario al hacer clic en el botón "Añadir productos"
   if (btnAgregarProducto && formProducto) {
-    btnAgregarProducto.style.display = 'inline-block'; // Mostrar el botón
     btnAgregarProducto.addEventListener('click', () => {
       if (formProducto.style.display === 'none' || formProducto.style.display === '') {
         formProducto.style.display = 'block';
@@ -31,14 +71,28 @@ document.addEventListener('DOMContentLoaded', () => {
   if (profileButton && perfilPanel) {
     profileButton.addEventListener('click', (e) => {
       e.preventDefault();
-      perfilPanel.style.display = 'block';
+      console.log('Perfil button clicked');
+      perfilPanel.classList.toggle('active');
+      console.log('Perfil panel active:', perfilPanel.classList.contains('active'));
     });
   }
 
   // Cerrar panel de perfil
   if (closeProfileBtn && perfilPanel) {
     closeProfileBtn.addEventListener('click', () => {
-      perfilPanel.style.display = 'none';
+      perfilPanel.classList.remove('active');
+    });
+  }
+
+  // Funcionalidad de cerrar sesión
+  const logoutButton = document.getElementById('logout-button');
+  if (logoutButton) {
+    logoutButton.addEventListener('click', () => {
+      // Limpiar localStorage
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+      // Redirigir a la página de login
+      window.location.href = '/login/login.html';
     });
   }
 
@@ -58,11 +112,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Eliminar todos los productos existentes
       try {
-        const token = localStorage.getItem('token');
         const resDelete = await fetch('/api/productos', {
           method: 'DELETE',
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${usuario ? localStorage.getItem('token') : ''}`
           }
         });
         if (!resDelete.ok) {
@@ -83,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const resAdd = await fetch(`/api/productos/${categoria}`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${usuario ? localStorage.getItem('token') : ''}`
           },
           body: formData,
         });
@@ -98,6 +151,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       alert('Producto agregado correctamente.');
 
+      // Limpiar productos visibles pero conservar el contenedor
+      const productosGrid = document.querySelector('.productoos-grid');
+      if (productosGrid) {
+        while (productosGrid.firstChild) {
+          productosGrid.removeChild(productosGrid.firstChild);
+        }
+      }
+
       // Actualizar contadores de categorías a 0 tras eliminar productos
       const categoryItems = document.querySelectorAll('.menusidebar .productos');
       categoryItems.forEach(item => {
@@ -107,8 +168,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      // Recargar la página para mostrar el nuevo producto y actualizar contadores
-      window.location.reload();
+      // No recargar la página para conservar el estado y mostrar el formulario
+      // window.location.reload();
     });
   }
 });

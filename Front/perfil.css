@@ -1,118 +1,48 @@
-/* Estilos para el panel lateral de perfil */
-
-.perfil-container {
-  position: fixed;
-  top: 0;
-  right: -300px; /* Oculto inicialmente a la derecha */
-  width: 300px;
-  height: 100%;
-  background-color: #fff;
-  box-shadow: -2px 0 5px rgba(0,0,0,0.3);
-  overflow-y: auto;
-  transition: right 0.3s ease;
-  z-index: 1100;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
+.perfil-panel {
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  width: 250px;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  display: none;
+  z-index: 1000;
+  border-radius: 6px;
 }
 
-.perfil-container.active {
-  right: 0; /* Visible al activarse */
+.perfil-panel.active {
+  display: block;
 }
 
-.perfil-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.perfil-header img {
+.perfil-avatar img {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  margin-bottom: 10px;
-}
-
-.perfil-info label {
-  font-weight: bold;
-  margin-top: 10px;
-}
-
-.perfil-info div {
-  margin-bottom: 10px;
-  font-size: 14px;
-  color: #333;
-}
-
-.perfil-links a {
+  border: 3px solid #805ad5;
   display: block;
-  margin: 10px 0;
-  color: #007bff;
-  text-decoration: none;
-  cursor: pointer;
+  margin: 0 auto 10px auto;
 }
 
-.perfil-links a:hover {
-  text-decoration: underline;
-}
-
-#change-password-form {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-}
-
-#change-password-form label {
-  margin-bottom: 5px;
+.perfil-info {
+  text-align: center;
   font-weight: bold;
+  margin-bottom: 10px;
 }
 
-#change-password-form input {
-  padding: 8px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-#change-password-form button {
-  padding: 10px;
-  background-color: #6c63ff;
+.perfil-opciones button {
+  width: 100%;
+  background-color: #805ad5;
   color: white;
   border: none;
+  padding: 8px 0;
+  margin: 5px 0;
   border-radius: 4px;
   cursor: pointer;
+  font-weight: 600;
 }
 
-#change-password-form button:hover {
-  background-color: #574fd6;
-}
-
-#close-profile {
-  margin-top: auto;
-  padding: 10px;
-  background-color: #e53e3e;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-#close-profile:hover {
-  background-color: #b83232;
-}
-
-/* Botón cerrar sesión al pie */
-#logout-button {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #e53e3e;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-#logout-button:hover {
-  background-color: #b83232;
+.perfil-opciones button:hover {
+  background-color: #6b46c1;
 }
