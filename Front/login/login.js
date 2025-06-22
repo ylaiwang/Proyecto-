@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('usuario', JSON.stringify(data.usuario));
         localStorage.setItem('rol', data.usuario.rol); // Guardar el rol en localStorage
         localStorage.setItem('token', data.token); // Guardar el token JWT en localStorage
+        localStorage.setItem('refreshToken', data.refreshToken); // Guardar el refresh token
         // Actualizar menú para mostrar perfil y ocultar registro
         const navRegister = document.getElementById('nav-register');
         const navProfile = document.getElementById('nav-profile');

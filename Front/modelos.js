@@ -51,8 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
     btnAgregarProducto.addEventListener('click', () => {
       if (formProducto.style.display === 'none' || formProducto.style.display === '') {
         formProducto.style.display = 'block';
+        btnAgregarProducto.textContent = 'Cancelar';
       } else {
         formProducto.style.display = 'none';
+        btnAgregarProducto.textContent = 'Añadir productos';
       }
     });
   }
@@ -110,30 +112,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Eliminar todos los productos existentes
-      try {
-        const resDelete = await fetch('/api/productos', {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${usuario ? localStorage.getItem('token') : ''}`
-          }
-        });
-        if (!resDelete.ok) {
-          alert('Error al eliminar productos existentes.');
-          return;
-        }
-      } catch (error) {
-        alert('Error de conexión al eliminar productos.');
-        return;
-      }
-
       // Preparar los datos del formulario para el nuevo producto
       const formData = new FormData(formProducto);
-      const categoria = formProducto.querySelector('#categoria').value;
+      let categoria = formProducto.querySelector('#categoria').value;
+      categoria = categoria.toLowerCase();
 
       // Enviar los datos del nuevo producto
       try {
-        const resAdd = await fetch(`/api/productos/${categoria}`, {
+        const resAdd = await fetch(`http://localhost:3000/api/productos/${categoria}`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${usuario ? localStorage.getItem('token') : ''}`
@@ -141,7 +127,9 @@ document.addEventListener('DOMContentLoaded', () => {
           body: formData,
         });
         if (!resAdd.ok) {
-          alert('Error al agregar el producto.');
+          const errorData = await resAdd.json();
+          const errorMessage = errorData.error || errorData.details || 'Error al agregar el producto.';
+          alert(errorMessage);
           return;
         }
       } catch (error) {
@@ -150,26 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       alert('Producto agregado correctamente.');
-
-      // Limpiar productos visibles pero conservar el contenedor
-      const productosGrid = document.querySelector('.productoos-grid');
-      if (productosGrid) {
-        while (productosGrid.firstChild) {
-          productosGrid.removeChild(productosGrid.firstChild);
-        }
-      }
-
-      // Actualizar contadores de categorías a 0 tras eliminar productos
-      const categoryItems = document.querySelectorAll('.menusidebar .productos');
-      categoryItems.forEach(item => {
-        const countSpan = item.querySelector('.cantidad');
-        if (countSpan) {
-          countSpan.textContent = '(0)';
-        }
-      });
-
-      // No recargar la página para conservar el estado y mostrar el formulario
-      // window.location.reload();
     });
   }
 });

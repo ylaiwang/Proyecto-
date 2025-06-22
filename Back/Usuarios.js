@@ -1,4 +1,4 @@
-const express = require('express');
+ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -46,14 +46,67 @@ const Usuario = mongoose.model('Usuario', usuarioSchema);
 const autenticarToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Token no proporcionado' });
+  if (!token) {
+    console.log('Token no proporcionado');
+    return res.status(401).json({ error: 'Token no proporcionado' });
+  }
 
   jwt.verify(token, 'secreto_super_seguro', (err, user) => {
-    if (err) return res.status(403).json({ error: 'Token inválido' });
+    if (err) {
+      console.log('Token inválido:', err);
+      return res.status(403).json({ error: 'Token inválido' });
+    }
+    console.log('Token válido, usuario:', user);
     req.user = user;
     next();
   });
 };
+
+// In-memory store for refresh tokens (use DB or Redis in production)
+let refreshTokens = [];
+
+// Ruta POST para login con refresh token
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const usuario = await Usuario.findOne({ correo: email });
+    if (!usuario) {
+      return res.status(401).json({ error: 'Usuario no encontrado' });
+    }
+    const isMatch = await usuario.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Contraseña incorrecta' });
+    }
+    const payload = { id: usuario._id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol };
+    const token = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '15m' });
+    const refreshToken = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '7d' });
+    refreshTokens.push(refreshToken);
+    res.json({ mensaje: 'Login exitoso', token, refreshToken, usuario: { id: usuario._id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol } });
+  } catch (error) {
+    res.status(500).json({ error: 'Error en el servidor' });
+  }
+});
+
+// Ruta POST para renovar token JWT usando refresh token
+router.post('/token', (req, res) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken) return res.status(401).json({ error: 'Refresh token requerido' });
+  if (!refreshTokens.includes(refreshToken)) return res.status(403).json({ error: 'Refresh token inválido' });
+
+  jwt.verify(refreshToken, 'secreto_super_seguro', (err, user) => {
+    if (err) return res.status(403).json({ error: 'Refresh token inválido' });
+    const payload = { id: user.id, nombre: user.nombre, correo: user.correo, rol: user.rol };
+    const token = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '15m' });
+    res.json({ token });
+  });
+});
+
+// Ruta POST para cerrar sesión e invalidar refresh token
+router.post('/logout', (req, res) => {
+  const { refreshToken } = req.body;
+  refreshTokens = refreshTokens.filter(token => token !== refreshToken);
+  res.json({ mensaje: 'Logout exitoso' });
+});
 
 // Ruta POST para crear un usuario
 router.post('/', async (req, res) => {
@@ -77,7 +130,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Ruta POST para login
+// Ruta POST para login con refresh token
 router.post('/login', async (req, res) => {
   try {
     console.log('POST /login body:', req.body); // Log para depuración
@@ -98,20 +151,46 @@ router.post('/login', async (req, res) => {
       console.error('Contraseña incorrecta para usuario:', email);
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
-    // Generar token JWT
-    const token = jwt.sign({ id: usuario._id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol }, 'secreto_super_seguro', { expiresIn: '1h' });
-    res.json({ mensaje: 'Login exitoso', token, usuario: { id: usuario._id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol } });
+    // Generar token JWT y refresh token
+    const payload = { id: usuario._id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol };
+    const token = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '15m' });
+    const refreshToken = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '7d' });
+    refreshTokens.push(refreshToken);
+    res.json({ mensaje: 'Login exitoso', token, refreshToken, usuario: { id: usuario._id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol } });
   } catch (error) {
     console.error('Error en POST /login:', error);
     res.status(500).json({ error: 'Error en el servidor' });
   }
 });
 
+// Ruta POST para renovar token JWT usando refresh token
+router.post('/token', (req, res) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken) return res.status(401).json({ error: 'Refresh token requerido' });
+  if (!refreshTokens.includes(refreshToken)) return res.status(403).json({ error: 'Refresh token inválido' });
+
+  jwt.verify(refreshToken, 'secreto_super_seguro', (err, user) => {
+    if (err) return res.status(403).json({ error: 'Refresh token inválido' });
+    const payload = { id: user.id, nombre: user.nombre, correo: user.correo, rol: user.rol };
+    const token = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '15m' });
+    res.json({ token });
+  });
+});
+
+// Ruta POST para cerrar sesión e invalidar refresh token
+router.post('/logout', (req, res) => {
+  const { refreshToken } = req.body;
+  refreshTokens = refreshTokens.filter(token => token !== refreshToken);
+  res.json({ mensaje: 'Logout exitoso' });
+});
+
 // Middleware para verificar que el usuario es admin
 const soloAdmin = (req, res, next) => {
   if (req.user && req.user.rol === 'admin') {
+    console.log('Acceso concedido a admin:', req.user);
     next();
   } else {
+    console.log('Acceso denegado. Usuario no es admin:', req.user);
     res.status(403).json({ error: 'Acceso denegado. Solo administradores.' });
   }
 };

@@ -18,8 +18,24 @@ mongoose.connection.once('open', () => {
   console.log('Conectado a la base de datos usuarios');
 });
 
+// Conexión a la base de datos productos
+const productosConnection = require('mongoose').createConnection('mongodb://localhost:27017/productos', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+
+productosConnection.once('open', () => {
+  console.log('Conectado a la base de datos productos');
+});
+
 app.use(cors());
 app.use(express.json());
+
+// Middleware para logging de todas las peticiones
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
 
 // Servir archivos estáticos
 app.use(express.static(path.join(__dirname, '../Front')));
@@ -35,6 +51,7 @@ app.get('/perfil.html', (req, res) => {
 });
 
 // Rutas de productos
+console.log('Montando router de productos:', productosRouter);
 app.use('/api/productos', productosRouter);
 
 // Rutas de usuarios

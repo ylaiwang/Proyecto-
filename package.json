@@ -6,7 +6,8 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.16.0",
-    "mongoose": "^8.14.1"
+    "mongoose": "^8.14.1",
+    "multer": "^2.0.1"
   },
   "name": "proyecto-de-titulo",
   "version": "1.0.0",
