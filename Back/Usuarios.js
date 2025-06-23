@@ -78,8 +78,8 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
     const payload = { id: usuario._id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol };
-    const token = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '15m' });
-    const refreshToken = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '7d' });
+    const token = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '12h' });
+    const refreshToken = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '12h' });
     refreshTokens.push(refreshToken);
     res.json({ mensaje: 'Login exitoso', token, refreshToken, usuario: { id: usuario._id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol } });
   } catch (error) {

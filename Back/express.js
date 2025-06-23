@@ -40,6 +40,9 @@ app.use((req, res, next) => {
 // Servir archivos estáticos
 app.use(express.static(path.join(__dirname, '../Front')));
 
+// Servir carpeta Imagenes estáticamente para imágenes
+app.use('/Imagenes', express.static(path.join(__dirname, '../Front/Imagenes')));
+
 // Ruta raíz
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../Front/portada.html'));

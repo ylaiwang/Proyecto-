@@ -8,7 +8,7 @@ const { soloAdmin, autenticarToken } = require('./usuarios'); // Importa los mid
 // Configuración de multer para almacenamiento de imágenes
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../uploads/'));
+    cb(null, path.join(__dirname, '../Front/Imagenes/'));
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -58,39 +58,56 @@ function getModelo(tipo) {
     case 'relojes': return Reloj;
     case 'tazas': return Taza;
     case 'tecnologia': return Tecnologia;
+    case 'todos': {
+      // Para "todos", devolver todos los productos de todas las colecciones concatenados
+      return null; // Indicamos que no hay un modelo único para "todos"
+    }
     default: throw new Error('Tipo de producto no válido');
   }
 }
 
 // --- CRUD por tipo de producto ---
 
-// Crear producto (solo admin)
-router.post('/:tipo', autenticarToken, soloAdmin, upload.single('imagen'), async (req, res) => {
-  try {
-    console.log('POST /:tipo body:', req.body);
-    console.log('Archivo recibido:', req.file);
-    const Modelo = getModelo(req.params.tipo);
-    const productoData = req.body;
-    if (req.file) {
-      productoData.imagen = '/uploads/' + req.file.filename;
+  // Crear producto (solo admin)
+  router.post('/:tipo', autenticarToken, soloAdmin, upload.single('imagen'), async (req, res) => {
+    try {
+      console.log('POST /:tipo body:', req.body);
+      console.log('Archivo recibido:', req.file);
+      const Modelo = getModelo(req.params.tipo);
+      const productoData = req.body;
+      if (req.file) {
+        // Cambiar la ruta para que coincida con la carpeta Imagenes
+        productoData.imagen = '/Imagenes/' + req.file.filename;
+      }
+      const producto = new Modelo(productoData);
+      await producto.save();
+      res.status(201).json(producto);
+    } catch (error) {
+      console.error('Error al crear producto:', error);
+      console.error('Detalles del error:', error.stack);
+      res.status(500).json({ error: 'Error al crear producto', details: error.message });
     }
-    const producto = new Modelo(productoData);
-    await producto.save();
-    res.status(201).json(producto);
-  } catch (error) {
-    console.error('Error al crear producto:', error);
-    console.error('Detalles del error:', error.stack);
-    res.status(500).json({ error: 'Error al crear producto', details: error.message });
-  }
-});
+  });
 
 // Listar productos por tipo (todos)
 router.get('/:tipo', async (req, res) => {
   try {
-    const Modelo = getModelo(req.params.tipo);
-    const productos = await Modelo.find();
-    res.json(productos);
+    if (req.params.tipo === 'todos') {
+      // Obtener productos de todas las colecciones y concatenar
+      const cristales = await Cristal.find();
+      const figuras = await Figura.find();
+      const relojes = await Reloj.find();
+      const tazas = await Taza.find();
+      const tecnologia = await Tecnologia.find();
+      const todos = [...cristales, ...figuras, ...relojes, ...tazas, ...tecnologia];
+      res.json(todos);
+    } else {
+      const Modelo = getModelo(req.params.tipo);
+      const productos = await Modelo.find();
+      res.json(productos);
+    }
   } catch (error) {
+    console.error('Error al obtener productos:', error);
     res.status(500).json({ error: 'Error al obtener productos' });
   }
 });
@@ -146,5 +163,28 @@ router.delete('/:tipo/:id', autenticarToken, soloAdmin, async (req, res) => {
       res.status(500).json({ error: 'Error al obtener calificaciones' });
     }
   });
+
+/**
+ * Endpoint para obtener el conteo de productos por cada categoría.*/
+router.get('/conteo/categorias', async (req, res) => {
+  try {
+    const cristalesCount = await Cristal.countDocuments();
+    const figurasCount = await Figura.countDocuments();
+    const relojesCount = await Reloj.countDocuments();
+    const tazasCount = await Taza.countDocuments();
+    const tecnologiaCount = await Tecnologia.countDocuments();
+
+    res.json({
+      cristales: cristalesCount,
+      figuras: figurasCount,
+      relojes: relojesCount,
+      tazas: tazasCount,
+      tecnologia: tecnologiaCount
+    });
+  } catch (error) {
+    console.error('Error al obtener conteo de categorías:', error);
+    res.status(500).json({ error: 'Error al obtener conteo de categorías' });
+  }
+});
 
 module.exports = router;
