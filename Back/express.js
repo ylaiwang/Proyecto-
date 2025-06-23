@@ -76,6 +76,11 @@ app.post('/api/admin/registrar', async (req, res) => {
   }
 });
 
+module.exports = {
+  app,
+  productosConnection
+};
+
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

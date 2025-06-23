@@ -23,6 +23,19 @@ const productosConnection = mongoose.createConnection('mongodb://localhost:27017
   useUnifiedTopology: true
 });
 
+// Manejar eventos de conexión para debug
+productosConnection.on('connected', () => {
+  console.log('Conexión a MongoDB productos establecida');
+});
+
+productosConnection.on('error', (err) => {
+  console.error('Error en la conexión a MongoDB productos:', err);
+});
+
+productosConnection.on('disconnected', () => {
+  console.warn('Conexión a MongoDB productos desconectada');
+});
+
 // Esquema base de producto
 const productoSchema = new mongoose.Schema({
   nombre: String,
@@ -52,6 +65,7 @@ const Calificacion = productosConnection.model('Calificacion', calificacionSchem
 
 // Función para obtener el modelo según tipo
 function getModelo(tipo) {
+  console.log('getModelo llamado con tipo:', tipo);
   switch (tipo) {
     case 'cristales': return Cristal;
     case 'figuras': return Figura;
@@ -66,6 +80,33 @@ function getModelo(tipo) {
   }
 }
 
+// Endpoint para obtener el conteo de productos por cada categoría.
+router.get('/conteo/categorias', async (req, res) => {
+  try {
+    console.log('Estado de conexión a MongoDB productos:', productosConnection.readyState);
+    if (productosConnection.readyState !== 1) {
+      console.error('Conexión a la base de datos no está activa. Estado:', productosConnection.readyState);
+      return res.status(500).json({ error: 'Conexión a la base de datos no está activa.' });
+    }
+    const cristalesCount = await Cristal.countDocuments();
+    const figurasCount = await Figura.countDocuments();
+    const relojesCount = await Reloj.countDocuments();
+    const tazasCount = await Taza.countDocuments();
+    const tecnologiaCount = await Tecnologia.countDocuments();
+
+    res.json({
+      cristales: cristalesCount,
+      figuras: figurasCount,
+      relojes: relojesCount,
+      tazas: tazasCount,
+      tecnologia: tecnologiaCount
+    });
+  } catch (error) {
+    console.error('Error al obtener conteo de categorías:', error.stack || error);
+    res.status(500).json({ error: 'Error al obtener conteo de categorías', details: error.message });
+  }
+});
+
 // --- CRUD por tipo de producto ---
 
   // Crear producto (solo admin)
@@ -73,7 +114,8 @@ function getModelo(tipo) {
     try {
       console.log('POST /:tipo body:', req.body);
       console.log('Archivo recibido:', req.file);
-      const Modelo = getModelo(req.params.tipo);
+      const tipoNormalizado = req.params.tipo.toLowerCase().trim();
+      const Modelo = getModelo(tipoNormalizado);
       const productoData = req.body;
       if (req.file) {
         // Cambiar la ruta para que coincida con la carpeta Imagenes
@@ -89,33 +131,54 @@ function getModelo(tipo) {
     }
   });
 
-// Listar productos por tipo (todos)
-router.get('/:tipo', async (req, res) => {
-  try {
-    if (req.params.tipo === 'todos') {
-      // Obtener productos de todas las colecciones y concatenar
-      const cristales = await Cristal.find();
-      const figuras = await Figura.find();
-      const relojes = await Reloj.find();
-      const tazas = await Taza.find();
-      const tecnologia = await Tecnologia.find();
-      const todos = [...cristales, ...figuras, ...relojes, ...tazas, ...tecnologia];
-      res.json(todos);
-    } else {
-      const Modelo = getModelo(req.params.tipo);
-      const productos = await Modelo.find();
-      res.json(productos);
+  // Listar productos por tipo (todos)
+  router.get('/:tipo', async (req, res) => {
+    try {
+      const tipoNormalizado = req.params.tipo.toLowerCase().trim();
+      if (tipoNormalizado === 'todos') {
+        // Obtener productos de todas las colecciones y concatenar
+        const cristales = await Cristal.find();
+        const figuras = await Figura.find();
+        const relojes = await Reloj.find();
+        const tazas = await Taza.find();
+        const tecnologia = await Tecnologia.find();
+        const todos = [...cristales, ...figuras, ...relojes, ...tazas, ...tecnologia];
+        res.json(todos);
+      } else {
+        const Modelo = getModelo(tipoNormalizado);
+        const productos = await Modelo.find();
+        res.json(productos);
+      }
+    } catch (error) {
+      console.error('Error al obtener productos:', error);
+      res.status(500).json({ error: 'Error al obtener productos' });
     }
-  } catch (error) {
-    console.error('Error al obtener productos:', error);
-    res.status(500).json({ error: 'Error al obtener productos' });
-  }
-});
+  });
+
+  // Obtener producto por tipo y id
+  router.get('/:tipo/:id', async (req, res) => {
+    try {
+      const tipoNormalizado = req.params.tipo.toLowerCase().trim();
+      const Modelo = getModelo(tipoNormalizado);
+      if (!Modelo) {
+        return res.status(400).json({ error: 'Tipo de producto no válido' });
+      }
+      const producto = await Modelo.findById(req.params.id);
+      if (!producto) {
+        return res.status(404).json({ error: 'Producto no encontrado' });
+      }
+      res.json(producto);
+    } catch (error) {
+      console.error('Error al obtener producto:', error);
+      res.status(500).json({ error: 'Error al obtener producto' });
+    }
+  });
 
 // Editar producto por tipo y ID (solo admin)
 router.put('/:tipo/:id', autenticarToken, soloAdmin, async (req, res) => {
   try {
-    const Modelo = getModelo(req.params.tipo);
+    const tipoNormalizado = req.params.tipo.toLowerCase().trim();
+    const Modelo = getModelo(tipoNormalizado);
     const producto = await Modelo.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(producto);
   } catch (error) {
@@ -126,7 +189,8 @@ router.put('/:tipo/:id', autenticarToken, soloAdmin, async (req, res) => {
 // Eliminar producto por tipo y ID (solo admin)
 router.delete('/:tipo/:id', autenticarToken, soloAdmin, async (req, res) => {
   try {
-    const Modelo = getModelo(req.params.tipo);
+    const tipoNormalizado = req.params.tipo.toLowerCase().trim();
+    const Modelo = getModelo(tipoNormalizado);
     await Modelo.findByIdAndDelete(req.params.id);
     res.json({ mensaje: 'Producto eliminado' });
   } catch (error) {
@@ -168,6 +232,11 @@ router.delete('/:tipo/:id', autenticarToken, soloAdmin, async (req, res) => {
  * Endpoint para obtener el conteo de productos por cada categoría.*/
 router.get('/conteo/categorias', async (req, res) => {
   try {
+    console.log('Estado de conexión a MongoDB productos:', productosConnection.readyState);
+    if (productosConnection.readyState !== 1) {
+      console.error('Conexión a la base de datos no está activa. Estado:', productosConnection.readyState);
+      return res.status(500).json({ error: 'Conexión a la base de datos no está activa.' });
+    }
     const cristalesCount = await Cristal.countDocuments();
     const figurasCount = await Figura.countDocuments();
     const relojesCount = await Reloj.countDocuments();
@@ -182,8 +251,8 @@ router.get('/conteo/categorias', async (req, res) => {
       tecnologia: tecnologiaCount
     });
   } catch (error) {
-    console.error('Error al obtener conteo de categorías:', error);
-    res.status(500).json({ error: 'Error al obtener conteo de categorías' });
+    console.error('Error al obtener conteo de categorías:', error.stack || error);
+    res.status(500).json({ error: 'Error al obtener conteo de categorías', details: error.message });
   }
 });
 

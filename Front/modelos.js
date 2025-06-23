@@ -262,6 +262,14 @@ document.addEventListener('DOMContentLoaded', () => {
       grid.innerHTML = ''; // Limpiar productos anteriores
 
       productos.forEach(producto => {
+        // Asignar explícitamente el tipo según la categoría actual
+        producto.tipo = categoria;
+
+        // Si el producto no tiene _id, intentar asignar id alternativo
+        if (!producto._id && producto.id) {
+          producto._id = producto.id;
+        }
+
         const card = document.createElement('div');
         card.className = 'productoo-card';
 
@@ -302,6 +310,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         card.appendChild(imageDiv);
         card.appendChild(infoDiv);
+
+        // Redirigir a detallesP.html con id y tipo real en query params
+        card.addEventListener('click', () => {
+          window.location.href = `detallesP.html?id=${producto._id}&tipo=${producto.tipo}`;
+        });
 
         grid.appendChild(card);
       });

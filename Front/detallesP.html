@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+  <meta charset="UTF-8" />
+  <title>Detalle del Producto</title>
+  <!-- Archivo CSS para estilos de la página de detalle -->
+  <link rel="stylesheet" href="detallesP.css" />
+</head>
+<body>
+  <header class="main-header">
+    <div class="site-title">Watch web - Detalle del Producto</div>
+    <nav class="main-nav">
+      <ul class="nav-menu">
+        <li><a href="modelos.html" class="nav-link">Tienda</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="detalle-container">
+    <button id="btnVolver" class="volver-button">← Volver a la tienda</button>
+    <div class="detalle-producto">
+      <div class="detalle-imagen-container">
+        <img id="detalle-img" src="" alt="Imagen del producto" />
+        <div class="zoom-controls">
+          <button id="zoom-in">+</button>
+          <button id="zoom-out">-</button>
+        </div>
+      </div>
+      <div class="detalle-info">
+        <h1 id="detalle-titulo"></h1>
+        <div id="detalle-precio" class="detalle-precio"></div>
+        <div id="detalle-descripcion" class="detalle-descripcion"></div>
+        <div id="detalle-calificaciones" class="detalle-calificaciones"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="detallesP.js"></script>
+</body>
+</html>
