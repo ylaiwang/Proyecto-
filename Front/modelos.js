@@ -46,14 +46,31 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnAgregarProducto) btnAgregarProducto.style.display = 'none';
   }
 
-  // Mostrar/ocultar formulario al hacer clic en el botón "Añadir productos"
-  if (btnAgregarProducto && formProducto) {
+  // Mostrar/ocultar modal al hacer clic en el botón "Añadir productos"
+  const modalAgregarProducto = document.getElementById('modalAgregarProducto');
+  const cerrarModalAgregar = document.getElementById('cerrarModalAgregar');
+
+  if (btnAgregarProducto && modalAgregarProducto && cerrarModalAgregar) {
     btnAgregarProducto.addEventListener('click', () => {
-      if (formProducto.style.display === 'none' || formProducto.style.display === '') {
-        formProducto.style.display = 'block';
+      if (modalAgregarProducto.classList.contains('modal-hidden')) {
+        modalAgregarProducto.classList.remove('modal-hidden');
         btnAgregarProducto.textContent = 'Cancelar';
       } else {
-        formProducto.style.display = 'none';
+        modalAgregarProducto.classList.add('modal-hidden');
+        btnAgregarProducto.textContent = 'Añadir productos';
+      }
+    });
+
+    cerrarModalAgregar.addEventListener('click', () => {
+      console.log('Cerrar modal clicked');
+      modalAgregarProducto.classList.add('modal-hidden');
+      btnAgregarProducto.textContent = 'Añadir productos';
+    });
+
+    // Cerrar modal al hacer clic fuera del contenido
+    modalAgregarProducto.addEventListener('click', (e) => {
+      if (e.target === modalAgregarProducto) {
+        modalAgregarProducto.classList.add('modal-hidden');
         btnAgregarProducto.textContent = 'Añadir productos';
       }
     });
@@ -98,6 +115,67 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Función para cargar el conteo de productos por categoría y renderizar el catálogo
+  async function cargarCategorias() {
+    try {
+      const res = await fetch('http://localhost:3000/api/productos/conteo/categorias');
+      if (!res.ok) {
+        alert('Error al cargar conteo de categorías.');
+        return;
+      }
+      const conteos = await res.json();
+      const catalogo = document.querySelector('.menusidebar');
+      if (!catalogo) return;
+
+      // Limpiar catálogo actual
+      catalogo.innerHTML = '';
+
+      // Mapeo de nombres para mostrar en el catálogo
+      const nombresCategorias = {
+        tecnologia: 'Tecnología',
+        cristales: 'Cristales',
+        figuras: 'Figuras',
+        relojes: 'Relojes',
+        tazas: 'Tazas',
+        todos: 'Todos'
+      };
+
+      // Crear elementos para cada categoría con su conteo
+      let first = true;
+      // Añadir la categoría "Todos" manualmente con el conteo total al inicio
+      const totalCount = Object.values(conteos).reduce((a, b) => a + b, 0);
+      const todosDiv = document.createElement('div');
+      todosDiv.className = 'productos productos-active';
+      todosDiv.dataset.categoria = 'todos';
+      todosDiv.textContent = `Todos (${totalCount})`;
+      catalogo.appendChild(todosDiv);
+      cargarProductos('todos');
+      first = false;
+
+      for (const [key, count] of Object.entries(conteos)) {
+        const div = document.createElement('div');
+        div.className = 'productos';
+        div.dataset.categoria = key;
+        div.textContent = `${nombresCategorias[key]} (${count})`;
+        catalogo.appendChild(div);
+      }
+
+      // Agregar evento click para filtrar productos por categoría
+      const items = catalogo.querySelectorAll('.productos');
+      items.forEach(item => {
+        item.addEventListener('click', () => {
+          const categoria = item.dataset.categoria;
+          cargarProductos(categoria);
+          // Marcar la categoría seleccionada visualmente
+          items.forEach(i => i.classList.remove('productos-active'));
+          item.classList.add('productos-active');
+        });
+      });
+    } catch (error) {
+      alert('Error al cargar categorías.');
+    }
+  }
+
   if (formProducto) {
     formProducto.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -117,27 +195,238 @@ document.addEventListener('DOMContentLoaded', () => {
       let categoria = formProducto.querySelector('#categoria').value;
       categoria = categoria.toLowerCase();
 
-      // Enviar los datos del nuevo producto
-      try {
-        const resAdd = await fetch(`http://localhost:3000/api/productos/${categoria}`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${usuario ? localStorage.getItem('token') : ''}`
-          },
-          body: formData,
-        });
-        if (!resAdd.ok) {
-          const errorData = await resAdd.json();
-          const errorMessage = errorData.error || errorData.details || 'Error al agregar el producto.';
-          alert(errorMessage);
-          return;
+      // Función para obtener token válido con refresh automático
+      async function getValidToken() {
+        let token = localStorage.getItem('token');
+        if (!token) return null;
+
+        // Decodificar token para verificar expiración
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const exp = payload.exp;
+        const now = Math.floor(Date.now() / 1000);
+
+        if (exp > now) {
+          // Token válido
+          return token;
+        } else {
+          // Token expirado, intentar refresh
+          const refreshToken = localStorage.getItem('refreshToken');
+          if (!refreshToken) return null;
+
+          try {
+            const res = await fetch('http://localhost:3000/api/usuarios/token', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ refreshToken })
+            });
+            if (!res.ok) {
+              // Refresh token inválido o expirado
+              localStorage.removeItem('token');
+              localStorage.removeItem('refreshToken');
+              localStorage.removeItem('usuario');
+              window.location.href = '/login/login.html';
+              return null;
+            }
+            const data = await res.json();
+            localStorage.setItem('token', data.token);
+            return data.token;
+          } catch (err) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('usuario');
+            window.location.href = '/login/login.html';
+            return null;
+          }
         }
-      } catch (error) {
-        alert('Error de conexión al agregar el producto.');
+      }
+
+      const validToken = await getValidToken();
+      if (!validToken) {
+        alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
         return;
       }
+
+      const resAdd = await fetch(`http://localhost:3000/api/productos/${categoria}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${validToken}`
+        },
+        body: formData,
+      });
+      if (!resAdd.ok) {
+        const errorData = await resAdd.json();
+        const errorMessage = errorData.error || errorData.details || 'Error al agregar el producto.';
+        alert(errorMessage);
+        return;
+      }
+      // Refrescar la lista de productos después de agregar uno nuevo
+      await cargarProductos(categoria);
 
       alert('Producto agregado correctamente.');
     });
   }
+
+  // Función para cargar productos y mostrarlos en la interfaz
+  async function cargarProductos(categoria) {
+    try {
+      const res = await fetch(`http://localhost:3000/api/productos/${categoria}`);
+      if (!res.ok) {
+        alert('Error al cargar productos.');
+        return;
+      }
+      const productos = await res.json();
+      const grid = document.querySelector('.productoos-grid');
+      grid.innerHTML = ''; // Limpiar productos anteriores
+
+      // Obtener el texto de búsqueda
+      const searchInput = document.querySelector('.buscador-input');
+      const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+      // Filtrar productos según el texto de búsqueda
+      const productosFiltrados = productos.filter(producto => {
+        return (
+          producto.nombre.toLowerCase().includes(searchTerm) ||
+          (producto.descripcion && producto.descripcion.toLowerCase().includes(searchTerm))
+        );
+      });
+
+      productosFiltrados.forEach(producto => {
+        // Asignar explícitamente el tipo según la categoría actual
+        // Si la categoría es "todos", usar el tipo real del producto
+        if (categoria === 'todos' && producto.tipoReal) {
+          producto.tipo = producto.tipoReal;
+        } else {
+          producto.tipo = categoria;
+        }
+
+        // Si el producto no tiene _id, intentar asignar id alternativo
+        if (!producto._id && producto.id) {
+          producto._id = producto.id;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'productoo-card';
+
+        const imageDiv = document.createElement('div');
+        imageDiv.className = 'producto-image';
+
+        if (producto.imagen) {
+          const img = document.createElement('img');
+          img.src = producto.imagen;
+          img.alt = producto.nombre;
+          img.className = 'producto-img';
+          imageDiv.appendChild(img);
+        } else {
+          const placeholder = document.createElement('div');
+          placeholder.className = 'placeholder-image';
+          placeholder.innerHTML = `
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2">
+              <circle cx="12" cy="10" r="3"></circle>
+              <path d="M4 20v-1a4 4 0 014-4h8a4 4 0 014 4v1"/>
+            </svg>
+          `;
+        }
+        card.appendChild(imageDiv);
+
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'producto-info';
+
+        const title = document.createElement('h3');
+        title.className = 'producto-title';
+        title.textContent = producto.nombre;
+        infoDiv.appendChild(title);
+
+        // Mostrar tipo de producto
+        const tipoP = document.createElement('p');
+        tipoP.className = 'producto-tipo';
+        tipoP.textContent = `Tipo: ${producto.tipo}`;
+        infoDiv.appendChild(tipoP);
+
+        // Mostrar estrellas promedio
+        const estrellasP = document.createElement('p');
+        estrellasP.className = 'producto-estrellas';
+        estrellasP.textContent = 'Cargando estrellas...';
+        infoDiv.appendChild(estrellasP);
+
+        // Mostrar cantidad de comentarios
+        const comentariosP = document.createElement('p');
+        comentariosP.className = 'producto-comentarios';
+        comentariosP.textContent = 'Cargando comentarios...';
+        infoDiv.appendChild(comentariosP);
+
+        // Obtener y mostrar estrellas promedio y cantidad de comentarios
+        fetch(`http://localhost:3000/api/productos/${producto.tipo}/${producto._id}/calificaciones`)
+          .then(res => res.json())
+          .then(calificaciones => {
+            if (calificaciones.length === 0) {
+              estrellasP.textContent = 'Sin calificaciones';
+              comentariosP.textContent = 'Sin comentarios';
+            } else {
+              const sumaEstrellas = calificaciones.reduce((acc, c) => acc + c.estrellas, 0);
+              const promedio = sumaEstrellas / calificaciones.length;
+              const estrellasVisuales = '★'.repeat(Math.round(promedio)) + '☆'.repeat(5 - Math.round(promedio));
+              estrellasP.textContent = `Estrellas: ${estrellasVisuales} (${promedio.toFixed(1)})`;
+              comentariosP.textContent = `Comentarios(${calificaciones.length})`;
+            }
+          })
+          .catch(() => {
+            estrellasP.textContent = 'Error al cargar estrellas';
+            comentariosP.textContent = 'Error al cargar comentarios';
+          });
+
+        const price = document.createElement('p');
+        price.className = 'producto-price';
+        price.textContent = `$${producto.precio.toFixed(2)}`;
+        infoDiv.appendChild(price);
+
+        card.appendChild(infoDiv);
+
+        // Evento para mostrar detalle al hacer clic en la tarjeta
+        card.addEventListener('click', () => {
+          window.location.href = `detallesP.html?id=${producto._id}&tipo=${producto.tipo}`;
+        });
+
+        // Botón eliminar producto (solo para admin)
+        if (userRole === 'admin') {
+          const btnEliminar = document.createElement('button');
+          btnEliminar.textContent = 'Eliminar';
+          btnEliminar.className = 'btn-eliminar-producto';
+          btnEliminar.addEventListener('click', async (e) => {
+            e.stopPropagation(); // Evitar que se active el evento de mostrar detalle
+            if (!confirm(`¿Seguro que quieres eliminar el producto "${producto.nombre}"?`)) return;
+
+            try {
+              const token = localStorage.getItem('token');
+              if (!token) {
+                alert('No autenticado. Por favor, inicia sesión.');
+                return;
+              }
+              const res = await fetch(`http://localhost:3000/api/productos/${producto.tipo}/${producto._id}`, {
+                method: 'DELETE',
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+              });
+              if (!res.ok) {
+                alert('Error al eliminar el producto.');
+                return;
+              }
+              alert('Producto eliminado correctamente.');
+              cargarProductos(categoria);
+            } catch (error) {
+              alert('Error al eliminar el producto.');
+            }
+          });
+          card.appendChild(btnEliminar);
+        }
+
+        grid.appendChild(card);
+      });
+    } catch (error) {
+      alert('Error al cargar productos.');
+    }
+  }
+
+  // Cargar categorías al inicio
+  cargarCategorias();
 });

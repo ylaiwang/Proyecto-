@@ -12,7 +12,7 @@
     <nav class="main-nav">
       <ul class="nav-menu">
         <li><a href="portada.html" class="nav-link">Portada</a></li>
-        <li id="nav-register" style="display: inline-block;"><a href="/login/login.html" class="nav-link">Registro</a></li>
+        <li id="nav-register" class="nav-register-inline"><a href="/login/login.html" class="nav-link">Registro</a></li>
         <li id="profile-button" rel="stylesheet" href="perfil.css" class="nav-link">Perfil</li>
       </ul>
     </nav>
@@ -22,49 +22,41 @@
 <div id="perfil-panel" class="perfil-panel">
   <button class="cerrar-perfil" id="close-profile" type="button">×</button>
   <div class="perfil-avatar">
-    <img src="/perfil-de-usuario.jpg" alt="Usuario" style="width:80px;height:80px;border-radius:50%;border:3px solid #805ad5;">
-    <div id="user-name" style="margin-top: 10px; font-weight: bold; text-align: center;"></div>
-    <div id="user-email" style="font-size: 0.9em; color: #666; text-align: center; margin-bottom: 10px;"></div>
+    <label for="imagenPerfil" class="perfil-avatar-label">
+      <img id="preview" src="" alt="Usuario" class="preview-img">
+      <input type="file" id="imagenPerfil" name="imagenPerfil" accept="image/*" class="input-file-hidden">
+    </label>
+    <div id="user-name" class="perfil-info"></div>
+    <div id="user-email" class="perfil-email"></div>
   </div>
   <!-- Botón para seleccionar imagen -->
-  <form id="formImagen" style="margin-bottom: 10px;">
-    <label for="imagenPerfil">
-      <img id="preview" src="imagenes/default.png" alt="Usuario" style="width:80px; border-radius:50%;">
-    </label>
-    <input type="file" id="imagenPerfil" name="imagenPerfil" accept="image/*" style="display:none;">
+  <form id="formImagen" class="form-imagen-margin">
   </form>
 
   <div class="perfil-opciones">
     <button class="perfil-btn" id="logout-button">Cerrar sesión</button>
     <button class="perfil-btn" id="change-name-btn">Cambiar nombre</button>
     <button class="perfil-btn" id="change-password-btn">Cambiar contraseña</button>
-    <button class="perfil-btn" id="delete-account-btn" style="background-color: #e53e3e; margin-top: 10px;">Borrar cuenta</button>
+    <button class="perfil-btn btn-delete-account" id="delete-account-btn">Borrar cuenta</button>
   </div>
 
   <!-- Formulario para cambiar nombre (oculto por defecto) -->
-  <form id="change-name-form" style="display:none; margin-top:10px;">
+  <form id="change-name-form" class="form-hidden-margin">
     <input type="text" id="new-name" placeholder="Nuevo nombre" required>
     <button type="submit" class="perfil-btn">Guardar nombre</button>
   </form>
 
   <!-- Formulario para cambiar contraseña (oculto por defecto) -->
-  <form id="change-password-form" style="display:none; margin-top:10px;">
+  <form id="change-password-form" class="form-hidden-margin">
     <input type="password" id="new-password" placeholder="Nueva contraseña" required>
     <button type="submit" class="perfil-btn">Guardar contraseña</button>
-    <div id="password-change-message" style="margin-top:8px;font-size:0.95em;"></div>
+    <div id="password-change-message" class="password-change-message"></div>
   </form>
 </div>
   
   <!--Menu de navegación lateral-->
   <div class="page-container">
     <aside class="menusidebar">
-      <div class="productos">Tecnología <span class="cantidad">(1)</span></div>
-      <div class="productos">Cristales <span class="cantidad">(1)</span></div>
-      <div class="productos">Figuras <span class="cantidad">(3)</span></div>
-      <div class="productos">Ofertas <span class="cantidad">(3)</span></div>
-      <div class="productos">Relojes <span class="cantidad">(2)</span></div>
-      <div class="productos">Tazas <span class="cantidad">(1)</span></div>
-      <div class="productos productos-active">Todos <span class="cantidad">(8)</span></div>
     </aside>
     <main class="main-content">
       <!-- Aquí puedes agregar el contenido principal -->
@@ -101,107 +93,61 @@
         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
       </svg>
     </button>
-    <button id="btnAgregarProducto" style="display:none; margin-left: 10px; padding: 6px 12px; background-color: #805ad5; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+  <button id="btnAgregarProducto" class="btn-agregar-producto">
       Añadir productos
     </button>
   </div>
 
-  <!-- Grid de productos -->
-  <div class="productoos-grid">
-    <!-- Producto 1 -->
-    <div class="productoo-card">
-      <div class="producto-image">
-        <div class="placeholder-image">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2">
-            <circle cx="12" cy="10" r="3"></circle>
-            <path d="M4 20v-1a4 4 0 014-4h8a4 4 0 014 4v1"></path>
-          </svg>
-        </div>
+      <!-- Grid de productos -->
+      <div class="productoos-grid">
       </div>
-      <div class="producto-info">
-        <div class="producto-title">Cristal Cuadrado con Base</div>
-        <div class="producto-price">
-          <span class="price-range">$16.900 – $23.900</span>
-        </div>
-      </div>
-    </div>
-    <!-- Producto 2 -->
-    <div class="productoo-card">
-      <div class="producto-image">
-        <span class="sale-badge">¡Oferta!</span>
-        <img src="hello-kitty.jpg" alt="Hello Kitty" class="producto-img" style="display:none;">
-      </div>
-      <div class="producto-info">
-        <div class="producto-title">Hello Kitty</div>
-        <div class="producto-price">
-          <span class="original-price">$12.000</span>
-          <span class="sale-price">$9.600</span>
-        </div>
-      </div>
-    </div>
-    <!-- Producto 3 (puedes agregar más productos aquí) -->
-  </div>
     </main>
   </div>
 
-  <div id="detalle-producto" class="productoo-detalle" style="display:none;">
-  <button class="volver-button" onclick="cerrarDetalle()">← Volver</button>
-  <div class="productoo-contenido">
-    <div class="productoo-imagen-grande">
-      <img id="detalle-img" class="productoo-img-principal" src="" alt="">
-      <span id="detalle-oferta" class="oferta-badge" style="display:none;">¡Oferta!</span>
+  <!-- Modal para agregar producto -->
+  <div id="modalAgregarProducto" class="modal-hidden">
+    <div class="modal-content">
+      <button id="cerrarModalAgregar" class="modal-close-button">×</button>
+      <form id="formProducto" class="form-producto">
+        <div class="form-row">
+          <label for="nombre">Nombre</label>
+          <input type="text" id="nombre" name="nombre" placeholder="Nombre del producto" required>
+          <label for="categoria">Categoría</label>
+          <select id="categoria" name="categoria" required>
+            <option value="" disabled selected>Seleccione una categoría</option>
+            <option value="tecnologia">Tecnología</option>
+            <option value="cristales">Cristales</option>
+            <option value="figuras">Figuras</option>
+            <option value="relojes">Relojes</option>
+            <option value="tazas">Tazas</option>
+            <option value="todos">Todos</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" name="descripcion" placeholder="Descripción" required rows="4" class="textarea-resize-vertical"></textarea>
+        </div>
+
+        <div class="form-row">
+          <label for="precio">Precio</label>
+          <input type="number" id="precio" name="precio" placeholder="Precio" required min="1" step="any">
+        </div>
+
+        <div class="form-row">
+          <label for="imagen">Imagen</label>
+          <input type="file" id="imagen" name="imagen" accept="image/*">
+        </div>
+
+        <div class="form-row">
+          <label for="stock">Cantidad en stock</label>
+          <input type="number" id="stock" name="stock" placeholder="Cantidad en stock" required min="0" step="1">
+        </div>
+
+        <button type="submit">Agregar producto</button>
+      </form>
     </div>
-    <div class="productoo-info-detalle">
-      <h2 id="detalle-titulo" class="productoo-titulo-detalle"></h2>
-      <div class="productoo-precio-detalle">
-        <span id="detalle-precio-original" class="precio-original"></span>
-        <span id="detalle-precio-actual" class="precio-actual"></span>
-      </div>
-      <div id="detalle-descripcion" class="productoo-descripcion"></div>
-      <!-- Aquí puedes agregar más info: stock, botones, etc. -->
-    </div>
   </div>
-</div>
-
-<form id="formProducto" style="display:none; margin-top: 20px;">
-  <div class="form-row">
-    <label for="nombre">Nombre</label>
-    <input type="text" id="nombre" name="nombre" placeholder="Nombre del producto" required>
-    <label for="categoria">Categoría</label>
-    <select id="categoria" name="categoria" required>
-      <option value="" disabled selected>Seleccione una categoría</option>
-      <option value="tecnologia">Tecnología</option>
-      <option value="cristales">Cristales</option>
-      <option value="figuras">Figuras</option>
-      <option value="ofertas">Ofertas</option>
-      <option value="relojes">Relojes</option>
-      <option value="tazas">Tazas</option>
-      <option value="todos">Todos</option>
-    </select>
-  </div>
-
-  <div class="form-row">
-    <label for="descripcion">Descripción</label>
-    <textarea id="descripcion" name="descripcion" placeholder="Descripción" required rows="4" style="resize: vertical;"></textarea>
-  </div>
-
-  <div class="form-row">
-    <label for="precio">Precio</label>
-    <input type="number" id="precio" name="precio" placeholder="Precio" required min="1" step="any">
-  </div>
-
-  <div class="form-row">
-    <label for="imagen">Imagen</label>
-    <input type="file" id="imagen" name="imagen" accept="image/*">
-  </div>
-
-  <div class="form-row">
-    <label for="stock">Cantidad en stock</label>
-    <input type="number" id="stock" name="stock" placeholder="Cantidad en stock" required min="0" step="1">
-  </div>
-
-  <button type="submit">Agregar producto</button>
-</form>
 
 <!-- Modal de edición de producto -->
 <div id="editarProductoModal" class="modal-editar">
@@ -221,5 +167,6 @@
 </div>
 
   <script src="modelos.js"></script>
+  <script src="perfil.js"></script>
 </body>
 </html>

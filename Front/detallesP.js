@@ -136,21 +136,21 @@ document.addEventListener('DOMContentLoaded', () => {
       if (calificaciones.length === 0) {
         detalleCalificaciones.textContent = 'No hay calificaciones ni comentarios.';
       } else {
-          calificaciones.forEach(c => {
-            const calDiv = document.createElement('div');
-            calDiv.className = 'calificacion-item';
-            calDiv.innerHTML = `
-              <div class="calificacion-header">
-                <div class="calificacion-avatar">${c.usuario && c.usuario.nombre ? c.usuario.nombre.charAt(0).toUpperCase() : 'U'}</div>
-                <div class="calificacion-usuario">${c.usuario ? c.usuario.nombre : 'Usuario'}</div>
-                <div class="calificacion-estrellas">${'★'.repeat(c.estrellas)}${'☆'.repeat(5 - c.estrellas)}</div>
-                ${esAdmin ? `<button class="btnEliminarComentario" data-id="${c._id}" title="Eliminar comentario">🗑️</button>` : ''}
-              </div>
-              <div class="calificacion-comentario">${c.comentario || ''}</div>
-              <div class="calificacion-fecha">${new Date(c.fecha).toLocaleDateString()}</div>
-            `;
-      detalleCalificaciones.appendChild(calDiv);
-    });
+calificaciones.forEach(c => {
+  const calDiv = document.createElement('div');
+  calDiv.className = 'calificacion-item';
+  calDiv.innerHTML = `
+    <div class="calificacion-header">
+      <div class="calificacion-avatar">${c.usuario && c.usuario.nombre ? c.usuario.nombre.charAt(0).toUpperCase() : 'U'}</div>
+      <div class="calificacion-usuario">${c.usuario && c.usuario.nombre ? c.usuario.nombre : 'Usuario'}</div>
+      <div class="calificacion-estrellas">${'★'.repeat(c.estrellas)}${'☆'.repeat(5 - c.estrellas)}</div>
+      ${esAdmin ? `<button class="btnEliminarComentario" data-id="${c._id}" title="Eliminar comentario">🗑️</button>` : ''}
+    </div>
+    <div class="calificacion-comentario">${c.comentario || ''}</div>
+    <div class="calificacion-fecha">${new Date(c.fecha).toLocaleDateString()}</div>
+  `;
+  detalleCalificaciones.appendChild(calDiv);
+});
 
     // Agregar evento para eliminar comentario (solo admin)
     if (esAdmin) {
@@ -187,8 +187,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
       }
 
-      // Mostrar sección de comentarios si es admin
-      if (esAdmin) {
+      // Mostrar sección de comentarios si es admin o usuario normal
+      if (usuario && (usuario.rol === 'admin' || usuario.rol === 'usuario')) {
         comentarioSection.style.display = 'block';
       } else {
         comentarioSection.style.display = 'none';

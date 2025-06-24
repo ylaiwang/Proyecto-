@@ -169,8 +169,8 @@ router.get('/conteo/categorias', async (req, res) => {
       }
       res.json(producto);
     } catch (error) {
-      console.error('Error al obtener producto:', error);
-      res.status(500).json({ error: 'Error al obtener producto' });
+      console.error('Error al obtener producto:', error.stack || error);
+      res.status(500).json({ error: 'Error al obtener producto', details: error.message });
     }
   });
 
@@ -257,16 +257,70 @@ router.get('/conteo/categorias', async (req, res) => {
 });
 
 /**
- * Eliminar comentario por id (solo admin)
+ * Eliminar comentario por id (autor o admin)
  */
-router.delete('/api/productos/comentarios/:id', autenticarToken, soloAdmin, async (req, res) => {
+router.delete('/comentarios/:id', autenticarToken, async (req, res) => {
   try {
     const comentarioId = req.params.id;
-    await Calificacion.findByIdAndDelete(comentarioId);
+    const usuarioId = req.user.id;
+    const esAdmin = req.user.rol === 'admin';
+
+    const comentario = await Calificacion.findById(comentarioId);
+    if (!comentario) {
+      return res.status(404).json({ error: 'Comentario no encontrado' });
+    }
+
+    // Permitir eliminar si es admin o autor del comentario
+    if (!esAdmin && comentario.usuarioId.toString() !== usuarioId) {
+      return res.status(403).json({ error: 'No autorizado para eliminar este comentario' });
+    }
+
+    // Intentar eliminar el comentario
+    const resultado = await Calificacion.deleteOne({ _id: comentarioId });
+    if (resultado.deletedCount === 0) {
+      console.error('No se eliminó ningún comentario, ID:', comentarioId);
+      return res.status(500).json({ error: 'No se pudo eliminar el comentario' });
+    }
+
     res.json({ mensaje: 'Comentario eliminado' });
   } catch (error) {
     console.error('Error al eliminar comentario:', error);
-    res.status(500).json({ error: 'Error al eliminar comentario' });
+    console.error('Stack trace:', error.stack);
+    res.status(500).json({ error: 'Error al eliminar comentario', details: error.message });
+  }
+});
+
+/**
+ * Modificar comentario por id (autor)
+ */
+router.put('/comentarios/:id', autenticarToken, async (req, res) => {
+  try {
+    const comentarioId = req.params.id;
+    const usuarioId = req.user.id;
+    const { estrellas, comentario } = req.body;
+
+    if (!estrellas || estrellas < 1 || estrellas > 5) {
+      return res.status(400).json({ error: 'Número de estrellas inválido' });
+    }
+
+    const calificacion = await Calificacion.findById(comentarioId);
+    if (!calificacion) {
+      return res.status(404).json({ error: 'Comentario no encontrado' });
+    }
+
+    // Validar que el usuario sea el autor
+    if (calificacion.usuarioId.toString() !== usuarioId) {
+      return res.status(403).json({ error: 'No autorizado para modificar este comentario' });
+    }
+
+    calificacion.estrellas = estrellas;
+    calificacion.comentario = comentario;
+    await calificacion.save();
+
+    res.json(calificacion);
+  } catch (error) {
+    console.error('Error al modificar comentario:', error);
+    res.status(500).json({ error: 'Error al modificar comentario', details: error.message });
   }
 });
 
