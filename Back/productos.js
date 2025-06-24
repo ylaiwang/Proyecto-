@@ -256,4 +256,18 @@ router.get('/conteo/categorias', async (req, res) => {
   }
 });
 
+/**
+ * Eliminar comentario por id (solo admin)
+ */
+router.delete('/api/productos/comentarios/:id', autenticarToken, soloAdmin, async (req, res) => {
+  try {
+    const comentarioId = req.params.id;
+    await Calificacion.findByIdAndDelete(comentarioId);
+    res.json({ mensaje: 'Comentario eliminado' });
+  } catch (error) {
+    console.error('Error al eliminar comentario:', error);
+    res.status(500).json({ error: 'Error al eliminar comentario' });
+  }
+});
+
 module.exports = router;
