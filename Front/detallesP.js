@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const id = urlParams.get('id');
   const tipo = urlParams.get('tipo');
 
+  console.log('detallesP.js - id:', id, 'tipo:', tipo);
+
   // Validar que los parámetros existan, si no, redirigir a la tienda
   if (!id || !tipo) {
     alert('Parámetros de producto inválidos.');
@@ -24,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       // Realizar petición para obtener los datos del producto
       const resProducto = await fetch(`http://localhost:3000/api/productos/${tipo}/${id}`);
+      console.log('detallesP.js - fetch status:', resProducto.status);
       if (!resProducto.ok) {
         alert('Error al obtener detalle del producto.');
         window.location.href = 'modelos.html';

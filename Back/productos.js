@@ -135,20 +135,20 @@ router.get('/conteo/categorias', async (req, res) => {
   router.get('/:tipo', async (req, res) => {
     try {
       const tipoNormalizado = req.params.tipo.toLowerCase().trim();
-      if (tipoNormalizado === 'todos') {
-        // Obtener productos de todas las colecciones y concatenar
-        const cristales = await Cristal.find();
-        const figuras = await Figura.find();
-        const relojes = await Reloj.find();
-        const tazas = await Taza.find();
-        const tecnologia = await Tecnologia.find();
-        const todos = [...cristales, ...figuras, ...relojes, ...tazas, ...tecnologia];
-        res.json(todos);
-      } else {
-        const Modelo = getModelo(tipoNormalizado);
-        const productos = await Modelo.find();
-        res.json(productos);
-      }
+    if (tipoNormalizado === 'todos') {
+      // Obtener productos de todas las colecciones y concatenar
+      const cristales = (await Cristal.find()).map(p => ({ ...p.toObject(), tipoReal: 'cristales' }));
+      const figuras = (await Figura.find()).map(p => ({ ...p.toObject(), tipoReal: 'figuras' }));
+      const relojes = (await Reloj.find()).map(p => ({ ...p.toObject(), tipoReal: 'relojes' }));
+      const tazas = (await Taza.find()).map(p => ({ ...p.toObject(), tipoReal: 'tazas' }));
+      const tecnologia = (await Tecnologia.find()).map(p => ({ ...p.toObject(), tipoReal: 'tecnologia' }));
+      const todos = [...cristales, ...figuras, ...relojes, ...tazas, ...tecnologia];
+      res.json(todos);
+    } else {
+      const Modelo = getModelo(tipoNormalizado);
+      const productos = await Modelo.find();
+      res.json(productos);
+    }
     } catch (error) {
       console.error('Error al obtener productos:', error);
       res.status(500).json({ error: 'Error al obtener productos' });

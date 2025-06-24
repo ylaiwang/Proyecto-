@@ -263,7 +263,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       productos.forEach(producto => {
         // Asignar explícitamente el tipo según la categoría actual
-        producto.tipo = categoria;
+        // Si la categoría es "todos", usar el tipo real del producto
+        if (categoria === 'todos' && producto.tipoReal) {
+          producto.tipo = producto.tipoReal;
+        } else {
+          producto.tipo = categoria;
+        }
 
         // Si el producto no tiene _id, intentar asignar id alternativo
         if (!producto._id && producto.id) {
