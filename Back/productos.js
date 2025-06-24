@@ -63,6 +63,9 @@ const calificacionSchema = new mongoose.Schema({
 
 const Calificacion = productosConnection.model('Calificacion', calificacionSchema, 'calificaciones');
 
+// Cache para modelos dinámicos
+const modelosDinamicos = {};
+
 // Función para obtener el modelo según tipo
 function getModelo(tipo) {
   console.log('getModelo llamado con tipo:', tipo);
@@ -76,7 +79,15 @@ function getModelo(tipo) {
       // Para "todos", devolver todos los productos de todas las colecciones concatenados
       return null; // Indicamos que no hay un modelo único para "todos"
     }
-    default: throw new Error('Tipo de producto no válido');
+    default:
+      // Si el modelo dinámico ya existe, retornarlo
+      if (modelosDinamicos[tipo]) {
+        return modelosDinamicos[tipo];
+      }
+      // Crear un nuevo modelo dinámico para la categoría nueva
+      const nuevoModelo = productosConnection.model(tipo.charAt(0).toUpperCase() + tipo.slice(1), productoSchema, tipo);
+      modelosDinamicos[tipo] = nuevoModelo;
+      return nuevoModelo;
   }
 }
 
@@ -127,6 +138,8 @@ router.get('/conteo/categorias', async (req, res) => {
     } catch (error) {
       console.error('Error al crear producto:', error);
       console.error('Detalles del error:', error.stack);
+      console.error('Request body:', req.body);
+      console.error('Request file:', req.file);
       res.status(500).json({ error: 'Error al crear producto', details: error.message });
     }
   });

@@ -177,6 +177,22 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (formProducto) {
+    // Mostrar u ocultar input de nueva categoría según selección
+    const selectCategoria = formProducto.querySelector('#categoria');
+    const inputNuevaCategoria = formProducto.querySelector('#nuevaCategoria');
+
+    if (selectCategoria && inputNuevaCategoria) {
+      selectCategoria.addEventListener('change', () => {
+        if (selectCategoria.value === 'otra') {
+          inputNuevaCategoria.style.display = 'block';
+          inputNuevaCategoria.required = true;
+        } else {
+          inputNuevaCategoria.style.display = 'none';
+          inputNuevaCategoria.required = false;
+        }
+      });
+    }
+
     formProducto.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -193,7 +209,18 @@ document.addEventListener('DOMContentLoaded', () => {
       // Preparar los datos del formulario para el nuevo producto
       const formData = new FormData(formProducto);
       let categoria = formProducto.querySelector('#categoria').value;
-      categoria = categoria.toLowerCase();
+      if (categoria === 'otra') {
+        const nuevaCat = formProducto.querySelector('#nuevaCategoria').value.trim();
+        if (!nuevaCat) {
+          alert('Por favor, ingrese una nueva categoría.');
+          return;
+        }
+        categoria = nuevaCat.toLowerCase();
+      } else {
+        categoria = categoria.toLowerCase();
+      }
+
+      console.log('Categoría a enviar:', categoria); // Log para depuración
 
       // Función para obtener token válido con refresh automático
       async function getValidToken() {
