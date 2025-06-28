@@ -136,55 +136,55 @@ document.addEventListener('DOMContentLoaded', () => {
       if (calificaciones.length === 0) {
         detalleCalificaciones.textContent = 'No hay calificaciones ni comentarios.';
       } else {
-calificaciones.forEach(c => {
-  const calDiv = document.createElement('div');
-  calDiv.className = 'calificacion-item';
-  calDiv.innerHTML = `
-    <div class="calificacion-header">
-      <div class="calificacion-avatar">${c.usuario && c.usuario.nombre ? c.usuario.nombre.charAt(0).toUpperCase() : 'U'}</div>
-      <div class="calificacion-usuario">${c.usuario && c.usuario.nombre ? c.usuario.nombre : 'Usuario'}</div>
-      <div class="calificacion-estrellas">${'★'.repeat(c.estrellas)}${'☆'.repeat(5 - c.estrellas)}</div>
-      ${esAdmin ? `<button class="btnEliminarComentario" data-id="${c._id}" title="Eliminar comentario">🗑️</button>` : ''}
-    </div>
-    <div class="calificacion-comentario">${c.comentario || ''}</div>
-    <div class="calificacion-fecha">${new Date(c.fecha).toLocaleDateString()}</div>
-  `;
-  detalleCalificaciones.appendChild(calDiv);
-});
+        calificaciones.forEach(c => {
+          const calDiv = document.createElement('div');
+          calDiv.className = 'calificacion-item';
+          calDiv.innerHTML = `
+            <div class="calificacion-header">
+              <div class="calificacion-avatar">${c.usuario && c.usuario.nombre ? c.usuario.nombre.charAt(0).toUpperCase() : 'U'}</div>
+              <div class="calificacion-usuario">${c.usuario && c.usuario.nombre ? c.usuario.nombre : 'Usuario'}</div>
+              <div class="calificacion-estrellas">${'★'.repeat(c.estrellas)}${'☆'.repeat(5 - c.estrellas)}</div>
+              ${esAdmin ? `<button class="btnEliminarComentario" data-id="${c._id}" title="Eliminar comentario">🗑️</button>` : ''}
+            </div>
+            <div class="calificacion-comentario">${c.comentario || ''}</div>
+            <div class="calificacion-fecha">${new Date(c.fecha).toLocaleDateString()}</div>
+          `;
+          detalleCalificaciones.appendChild(calDiv);
+        });
 
-    // Agregar evento para eliminar comentario (solo admin)
-    if (esAdmin) {
-      const botonesEliminar = document.querySelectorAll('.btnEliminarComentario');
-      botonesEliminar.forEach(boton => {
-        boton.addEventListener('click', async (e) => {
-          const comentarioId = e.target.getAttribute('data-id');
-          if (!comentarioId) return;
-          if (!confirm('¿Estás seguro de que deseas eliminar este comentario?')) return;
+        // Agregar evento para eliminar comentario (solo admin)
+        if (esAdmin) {
+          const botonesEliminar = detalleCalificaciones.querySelectorAll('.btnEliminarComentario');
+          botonesEliminar.forEach(boton => {
+            boton.addEventListener('click', async (e) => {
+              const comentarioId = e.target.getAttribute('data-id');
+              if (!comentarioId) return;
+              if (!confirm('¿Estás seguro de que deseas eliminar este comentario?')) return;
 
-          try {
-            const token = await getValidToken();
-            if (!token) {
-              alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
-              return;
-            }
-            const res = await fetch(`http://localhost:3000/api/productos/comentarios/${comentarioId}`, {
-              method: 'DELETE',
-              headers: {
-                'Authorization': `Bearer ${token}`
+              try {
+                const token = await getValidToken();
+                if (!token) {
+                  alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
+                  return;
+                }
+                const res = await fetch(`http://localhost:3000/api/productos/comentarios/${comentarioId}`, {
+                  method: 'DELETE',
+                  headers: {
+                    'Authorization': `Bearer ${token}`
+                  }
+                });
+                if (!res.ok) {
+                  alert('Error al eliminar el comentario.');
+                  return;
+                }
+                alert('Comentario eliminado correctamente.');
+                await cargarDetalle(); // Esperar a que se recargue el detalle para actualizar la interfaz
+              } catch (error) {
+                alert('Error al eliminar el comentario.');
               }
             });
-            if (!res.ok) {
-              alert('Error al eliminar el comentario.');
-              return;
-            }
-            alert('Comentario eliminado correctamente.');
-            cargarDetalle();
-          } catch (error) {
-            alert('Error al eliminar el comentario.');
-          }
-        });
-      });
-    }
+          });
+        }
       }
 
       // Mostrar sección de comentarios si es admin o usuario normal

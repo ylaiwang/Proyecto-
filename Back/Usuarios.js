@@ -78,8 +78,8 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
     const payload = { id: usuario._id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol };
-    const token = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '12h' });
-    const refreshToken = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '12h' });
+    const token = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '7d' });
+    const refreshToken = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '30d' });
     refreshTokens.push(refreshToken);
     res.json({ mensaje: 'Login exitoso', token, refreshToken, usuario: { id: usuario._id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol } });
   } catch (error) {
@@ -96,7 +96,7 @@ router.post('/token', (req, res) => {
   jwt.verify(refreshToken, 'secreto_super_seguro', (err, user) => {
     if (err) return res.status(403).json({ error: 'Refresh token inválido' });
     const payload = { id: user.id, nombre: user.nombre, correo: user.correo, rol: user.rol };
-    const token = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '15m' });
+    const token = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '15h' });
     res.json({ token });
   });
 });
@@ -153,7 +153,7 @@ router.post('/login', async (req, res) => {
     }
     // Generar token JWT y refresh token
     const payload = { id: usuario._id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol };
-    const token = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '15m' });
+    const token = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '15h' });
     const refreshToken = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '7d' });
     refreshTokens.push(refreshToken);
     res.json({ mensaje: 'Login exitoso', token, refreshToken, usuario: { id: usuario._id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol } });
@@ -172,7 +172,7 @@ router.post('/token', (req, res) => {
   jwt.verify(refreshToken, 'secreto_super_seguro', (err, user) => {
     if (err) return res.status(403).json({ error: 'Refresh token inválido' });
     const payload = { id: user.id, nombre: user.nombre, correo: user.correo, rol: user.rol };
-    const token = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '15m' });
+    const token = jwt.sign(payload, 'secreto_super_seguro', { expiresIn: '15h' });
     res.json({ token });
   });
 });

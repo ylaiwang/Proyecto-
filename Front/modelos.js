@@ -156,8 +156,46 @@ document.addEventListener('DOMContentLoaded', () => {
         const div = document.createElement('div');
         div.className = 'productos';
         div.dataset.categoria = key;
-        div.textContent = `${nombresCategorias[key]} (${count})`;
+        div.textContent = `${nombresCategorias[key] || key.charAt(0).toUpperCase() + key.slice(1)} (${count})`;
         catalogo.appendChild(div);
+      }
+
+      // Actualizar select de categorías en el formulario
+      const selectCategoria = document.querySelector('#categoria');
+      if (selectCategoria) {
+        // Guardar valor seleccionado actual
+        const valorSeleccionado = selectCategoria.value;
+
+        // Limpiar opciones excepto "Seleccione una categoría" y "Otra"
+        const opcionesFijas = ['Seleccione una categoría', 'otra'];
+        selectCategoria.innerHTML = '';
+
+        // Agregar opción "Seleccione una categoría"
+        const opcionDefault = document.createElement('option');
+        opcionDefault.value = '';
+        opcionDefault.disabled = true;
+        opcionDefault.selected = true;
+        opcionDefault.textContent = 'Seleccione una categoría';
+        selectCategoria.appendChild(opcionDefault);
+
+        // Agregar categorías dinámicas
+        for (const key of Object.keys(conteos)) {
+          const opcion = document.createElement('option');
+          opcion.value = key;
+          opcion.textContent = nombresCategorias[key] || key.charAt(0).toUpperCase() + key.slice(1);
+          selectCategoria.appendChild(opcion);
+        }
+
+        // Agregar opción "Otra"
+        const opcionOtra = document.createElement('option');
+        opcionOtra.value = 'otra';
+        opcionOtra.textContent = 'Otra';
+        selectCategoria.appendChild(opcionOtra);
+
+        // Restaurar valor seleccionado si existe
+        if (valorSeleccionado && [...selectCategoria.options].some(opt => opt.value === valorSeleccionado)) {
+          selectCategoria.value = valorSeleccionado;
+        }
       }
 
       // Agregar evento click para filtrar productos por categoría
@@ -193,104 +231,105 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    formProducto.addEventListener('submit', async (e) => {
-      e.preventDefault();
+      formProducto.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-      const precioInput = document.getElementById('precio');
-      if (precioInput) {
-        const precioValue = precioInput.value.trim();
-        if (precioValue.startsWith('0')) {
-          alert('El precio no puede comenzar con 0.');
-          precioInput.focus();
-          return;
+        const precioInput = document.getElementById('precio');
+        if (precioInput) {
+          const precioValue = precioInput.value.trim();
+          if (precioValue.startsWith('0')) {
+            alert('El precio no puede comenzar con 0.');
+            precioInput.focus();
+            return;
+          }
         }
-      }
 
-      // Preparar los datos del formulario para el nuevo producto
-      const formData = new FormData(formProducto);
-      let categoria = formProducto.querySelector('#categoria').value;
-      if (categoria === 'otra') {
-        const nuevaCat = formProducto.querySelector('#nuevaCategoria').value.trim();
-        if (!nuevaCat) {
-          alert('Por favor, ingrese una nueva categoría.');
-          return;
-        }
-        categoria = nuevaCat.toLowerCase();
-      } else {
-        categoria = categoria.toLowerCase();
-      }
-
-      console.log('Categoría a enviar:', categoria); // Log para depuración
-
-      // Función para obtener token válido con refresh automático
-      async function getValidToken() {
-        let token = localStorage.getItem('token');
-        if (!token) return null;
-
-        // Decodificar token para verificar expiración
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        const exp = payload.exp;
-        const now = Math.floor(Date.now() / 1000);
-
-        if (exp > now) {
-          // Token válido
-          return token;
+        // Preparar los datos del formulario para el nuevo producto
+        const formData = new FormData(formProducto);
+        let categoria = formProducto.querySelector('#categoria').value;
+        if (categoria === 'otra') {
+          const nuevaCat = formProducto.querySelector('#nuevaCategoria').value.trim();
+          if (!nuevaCat) {
+            alert('Por favor, ingrese una nueva categoría.');
+            return;
+          }
+          categoria = nuevaCat.toLowerCase();
         } else {
-          // Token expirado, intentar refresh
-          const refreshToken = localStorage.getItem('refreshToken');
-          if (!refreshToken) return null;
+          categoria = categoria.toLowerCase();
+        }
 
-          try {
-            const res = await fetch('http://localhost:3000/api/usuarios/token', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ refreshToken })
-            });
-            if (!res.ok) {
-              // Refresh token inválido o expirado
+        console.log('Categoría a enviar:', categoria); // Log para depuración
+
+        // Función para obtener token válido con refresh automático
+        async function getValidToken() {
+          let token = localStorage.getItem('token');
+          if (!token) return null;
+
+          // Decodificar token para verificar expiración
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const exp = payload.exp;
+          const now = Math.floor(Date.now() / 1000);
+
+          if (exp > now) {
+            // Token válido
+            return token;
+          } else {
+            // Token expirado, intentar refresh
+            const refreshToken = localStorage.getItem('refreshToken');
+            if (!refreshToken) return null;
+
+            try {
+              const res = await fetch('http://localhost:3000/api/usuarios/token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refreshToken })
+              });
+              if (!res.ok) {
+                // Refresh token inválido o expirado
+                localStorage.removeItem('token');
+                localStorage.removeItem('refreshToken');
+                localStorage.removeItem('usuario');
+                window.location.href = '/login/login.html';
+                return null;
+              }
+              const data = await res.json();
+              localStorage.setItem('token', data.token);
+              return data.token;
+            } catch (err) {
               localStorage.removeItem('token');
               localStorage.removeItem('refreshToken');
               localStorage.removeItem('usuario');
               window.location.href = '/login/login.html';
               return null;
             }
-            const data = await res.json();
-            localStorage.setItem('token', data.token);
-            return data.token;
-          } catch (err) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('refreshToken');
-            localStorage.removeItem('usuario');
-            window.location.href = '/login/login.html';
-            return null;
           }
         }
-      }
 
-      const validToken = await getValidToken();
-      if (!validToken) {
-        alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
-        return;
-      }
+        const validToken = await getValidToken();
+        if (!validToken) {
+          alert('Sesión expirada. Por favor, inicia sesión de nuevo.');
+          return;
+        }
 
-      const resAdd = await fetch(`http://localhost:3000/api/productos/${categoria}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${validToken}`
-        },
-        body: formData,
+        const resAdd = await fetch(`http://localhost:3000/api/productos/${categoria}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${validToken}`,
+            'Accept': 'application/json'
+          },
+          body: formData,
+        });
+        if (!resAdd.ok) {
+          const errorData = await resAdd.json();
+          const errorMessage = errorData.error || errorData.details || 'Error al agregar el producto.';
+          alert(errorMessage);
+          return;
+        }
+        // Refrescar la lista de productos después de agregar uno nuevo
+        await cargarProductos(categoria);
+
+        alert('Producto agregado correctamente.');
       });
-      if (!resAdd.ok) {
-        const errorData = await resAdd.json();
-        const errorMessage = errorData.error || errorData.details || 'Error al agregar el producto.';
-        alert(errorMessage);
-        return;
-      }
-      // Refrescar la lista de productos después de agregar uno nuevo
-      await cargarProductos(categoria);
-
-      alert('Producto agregado correctamente.');
-    });
   }
 
   // Función para cargar productos y mostrarlos en la interfaz

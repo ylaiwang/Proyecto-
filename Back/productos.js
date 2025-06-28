@@ -105,12 +105,25 @@ router.get('/conteo/categorias', async (req, res) => {
     const tazasCount = await Taza.countDocuments();
     const tecnologiaCount = await Tecnologia.countDocuments();
 
+    // Contar documentos en colecciones dinámicas
+    const colecciones = await productosConnection.db.listCollections().toArray();
+    const nombresDinamicos = colecciones
+      .map(c => c.name)
+      .filter(name => !['calificaciones', 'comentarios', 'cristales', 'figuras', 'relojes', 'tazas', 'tecnologia'].includes(name));
+
+    const conteosDinamicos = {};
+    for (const nombre of nombresDinamicos) {
+      const count = await productosConnection.collection(nombre).countDocuments();
+      conteosDinamicos[nombre] = count;
+    }
+
     res.json({
       cristales: cristalesCount,
       figuras: figurasCount,
       relojes: relojesCount,
       tazas: tazasCount,
-      tecnologia: tecnologiaCount
+      tecnologia: tecnologiaCount,
+      ...conteosDinamicos
     });
   } catch (error) {
     console.error('Error al obtener conteo de categorías:', error.stack || error);
@@ -155,7 +168,23 @@ router.get('/conteo/categorias', async (req, res) => {
       const relojes = (await Reloj.find()).map(p => ({ ...p.toObject(), tipoReal: 'relojes' }));
       const tazas = (await Taza.find()).map(p => ({ ...p.toObject(), tipoReal: 'tazas' }));
       const tecnologia = (await Tecnologia.find()).map(p => ({ ...p.toObject(), tipoReal: 'tecnologia' }));
-      const todos = [...cristales, ...figuras, ...relojes, ...tazas, ...tecnologia];
+
+      // Obtener colecciones dinámicas excluyendo las fijas y colecciones de comentarios/calificaciones
+      const colecciones = await productosConnection.db.listCollections().toArray();
+      const nombresDinamicos = colecciones
+        .map(c => c.name)
+        .filter(name => !['cristales', 'figuras', 'relojes', 'tazas', 'tecnologia', 'calificaciones', 'comentarios'].includes(name));
+
+      let productosDinamicos = [];
+      for (const nombre of nombresDinamicos) {
+        const modeloDinamico = getModelo(nombre);
+        if (modeloDinamico) {
+          const productos = await modeloDinamico.find();
+          productosDinamicos = productosDinamicos.concat(productos.map(p => ({ ...p.toObject(), tipoReal: nombre })));
+        }
+      }
+
+      const todos = [...cristales, ...figuras, ...relojes, ...tazas, ...tecnologia, ...productosDinamicos];
       res.json(todos);
     } else {
       const Modelo = getModelo(tipoNormalizado);
@@ -205,7 +234,11 @@ router.delete('/:tipo/:id', autenticarToken, soloAdmin, async (req, res) => {
     const tipoNormalizado = req.params.tipo.toLowerCase().trim();
     const Modelo = getModelo(tipoNormalizado);
     await Modelo.findByIdAndDelete(req.params.id);
-    res.json({ mensaje: 'Producto eliminado' });
+
+    // Eliminar calificaciones asociadas al producto
+    await Calificacion.deleteMany({ productoId: req.params.id });
+
+    res.json({ mensaje: 'Producto y calificaciones eliminados' });
   } catch (error) {
     res.status(500).json({ error: 'Error al eliminar producto' });
   }
@@ -231,15 +264,47 @@ router.delete('/:tipo/:id', autenticarToken, soloAdmin, async (req, res) => {
     }
   });
 
-  // Obtener calificaciones y comentarios de un producto
-  router.get('/:tipo/:id/calificaciones', async (req, res) => {
-    try {
-      const calificaciones = await Calificacion.find({ productoId: req.params.id });
-      res.json(calificaciones);
-    } catch (error) {
-      res.status(500).json({ error: 'Error al obtener calificaciones' });
-    }
-  });
+// Obtener calificaciones y comentarios de un producto
+router.get('/:tipo/:id/calificaciones', async (req, res) => {
+  try {
+    // Obtener calificaciones
+    const calificaciones = await Calificacion.find({ productoId: req.params.id });
+
+    // Obtener IDs de usuarios para hacer consulta
+    const usuarioIds = calificaciones.map(c => c.usuarioId);
+
+    // Importar modelo Usuario desde Back/usuarios.js
+    const { Usuario } = require('./usuarios');
+
+    // Obtener usuarios por IDs
+    const usuarios = await Usuario.find({ _id: { $in: usuarioIds } }).select('nombre');
+
+    // Mapear usuarios por ID para fácil acceso
+    const usuariosMap = {};
+    usuarios.forEach(u => {
+      usuariosMap[u._id] = u.nombre;
+    });
+
+    // Añadir nombre de usuario a cada calificación
+    const calificacionesConNombre = calificaciones.map(c => {
+      return {
+        _id: c._id,
+        productoId: c.productoId,
+        usuarioId: c.usuarioId,
+        estrellas: c.estrellas,
+        comentario: c.comentario,
+        fecha: c.fecha,
+        usuario: {
+          nombre: usuariosMap[c.usuarioId] || 'Usuario'
+        }
+      };
+    });
+
+    res.json(calificacionesConNombre);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener calificaciones' });
+  }
+});
 
 /**
  * Endpoint para obtener el conteo de productos por cada categoría.*/
@@ -275,21 +340,25 @@ router.get('/conteo/categorias', async (req, res) => {
 router.delete('/comentarios/:id', autenticarToken, async (req, res) => {
   try {
     const comentarioId = req.params.id;
+    console.log('Eliminar comentario - ID recibido:', comentarioId);
     const usuarioId = req.user.id;
     const esAdmin = req.user.rol === 'admin';
 
     const comentario = await Calificacion.findById(comentarioId);
     if (!comentario) {
+      console.log('Comentario no encontrado para ID:', comentarioId);
       return res.status(404).json({ error: 'Comentario no encontrado' });
     }
 
     // Permitir eliminar si es admin o autor del comentario
     if (!esAdmin && comentario.usuarioId.toString() !== usuarioId) {
+      console.log('No autorizado para eliminar comentario ID:', comentarioId);
       return res.status(403).json({ error: 'No autorizado para eliminar este comentario' });
     }
 
     // Intentar eliminar el comentario
     const resultado = await Calificacion.deleteOne({ _id: comentarioId });
+    console.log('Resultado eliminación comentario:', resultado);
     if (resultado.deletedCount === 0) {
       console.error('No se eliminó ningún comentario, ID:', comentarioId);
       return res.status(500).json({ error: 'No se pudo eliminar el comentario' });
